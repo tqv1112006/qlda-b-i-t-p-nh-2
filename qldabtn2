@@ -1,0 +1,2514 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Book &amp; Coffee – Dự Án Quán Cà Phê Sách</title>
+<meta name="description" content="Bài thuyết trình dự án Thành lập Quán Cà phê Sách (Book & Coffee) – WBS, sơ đồ tổ chức, ngân sách và tiến độ." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Montserrat:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* ============================================================
+   RESET & ROOT TOKENS
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  animation: none !important;
+}
+
+:root {
+  --plum:     #7C3A5F;
+  --plum-dk:  #5e2947;
+  --plum-lt:  #f3eaf1;
+  --sage:     #C5DE82;
+  --coral:    #FD8C6E;
+  --steel:    #98ACB5;
+  --white:    #FFFFFF;
+  --bg:       #F8F9FA;
+  --text:     #1E1E1E;
+  --card-bg:  #FFFFFF;
+  --radius:   16px;
+  --shadow:   0 8px 30px rgba(124,58,95,.09);
+}
+
+/* ============================================================
+   1. NỚI RỘNG TỐI ĐA KHUNG HIỂN THỊ (CONTAINER WIDTH & HEIGHT)
+   ============================================================ */
+html, body {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Be Vietnam Pro', sans-serif;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+}
+
+#deck {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  box-sizing: border-box;
+}
+
+/* Thẻ .slide khi active */
+.slide {
+  position: absolute;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  display: none;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: var(--bg);
+}
+
+.slide.active {
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 24px 60px 30px 60px !important;
+  box-sizing: border-box !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+/* Riêng Slide 1 (Bìa) và Slide 19 (Kết luận) dạng Split Screen 50/50 */
+#s1.slide.active,
+#s19.slide.active {
+  flex-direction: row !important;
+  padding: 0 !important;
+}
+
+/* Section divider slides (Split Screen 55/45) */
+.slide-section.slide.active {
+  display: grid !important;
+  grid-template-columns: 1.12fr 0.88fr !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden !important;
+  background: var(--plum) !important;
+}
+
+/* Slide Header Bar */
+.slide-header {
+  width: 100%;
+  max-width: 1650px; /* Nới rộng theo Yêu cầu 1 */
+  margin: 0 auto 12px auto;
+  padding-bottom: 10px;
+  border-bottom: 3.5px solid var(--plum);
+  background: transparent;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.slide-header .tag {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--coral);
+  text-transform: uppercase;
+  margin-bottom: 3px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.slide-header h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--plum);
+  line-height: 1.25;
+}
+
+/* Vùng chứa nội dung của toàn bộ các slide (content wrapper / main content): */
+.slide-body,
+.content-container,
+.grid {
+  flex: 1;
+  width: 100%;
+  max-width: 1650px; /* Nới rộng tối đa khung hiển thị theo Yêu cầu 1 */
+  min-height: 72vh;  /* min-height: 72vh theo Yêu cầu 1 */
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly; /* Thuộc tính space-evenly tự động phân bổ đều khoảng cách từ trên xuống dưới, lấp đầy toàn bộ chiều cao */
+  box-sizing: border-box;
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: none !important;
+}
+
+.slide-body.row {
+  flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.slide-body.col {
+  flex-direction: column !important;
+  justify-content: space-evenly;
+}
+
+/* ============================================================
+   2. TĂNG KÍCH THƯỚC CHỮ & ĐỆM KHỐI (SCALE UP TYPOGRAPHY & PADDING)
+   ============================================================ */
+.card {
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px 28px; /* Tăng padding bên trong lên 24px - 32px theo Yêu cầu 2 */
+  border: 1.5px solid rgba(152,172,181,.24);
+  box-sizing: border-box;
+  font-size: 17px; /* Cỡ chữ nội dung thông thường: 17px - 18px */
+  line-height: 1.6;
+}
+.card-plum {
+  background: var(--plum);
+  color: var(--white);
+  border: none;
+}
+.card-sage  { background: #f3fadf; border: 2px solid var(--sage); }
+.card-coral { background: #fff3ef; border: 2px solid var(--coral); }
+
+/* Cỡ chữ tiêu đề con / tiêu đề thẻ: 20px - 22px bold theo Yêu cầu 2 */
+.card h3, .card h4, .floor-card h4, .icon-card h4, .staff-card h4, .roadmap-card .g-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+/* Cỡ chữ số liệu KPI (Slide 4, 5, 18): nâng lên 56px - 64px bold theo Yêu cầu 2 */
+.kpi-num {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 60px; /* 56px - 64px bold tạo trọng lực thị giác cực mạnh */
+  font-weight: 900;
+  color: var(--coral);
+  line-height: 1;
+  letter-spacing: -1.5px;
+}
+.kpi-label {
+  font-size: 15.5px;
+  color: #555;
+  margin-top: 8px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.badge {
+  display: inline-block;
+  background: var(--sage);
+  color: #3a5a00;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 4px 14px;
+  border-radius: 20px;
+  letter-spacing: .5px;
+}
+.badge-coral { background: var(--coral); color: #fff; }
+.badge-plum  { background: var(--plum); color: #fff; }
+
+/* ============================================================
+   SPLIT SCREEN SECTION DIVIDERS (Slide 3, 7, 10, 14)
+   ============================================================ */
+.section-left-panel {
+  background: var(--plum);
+  padding: 44px 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+  box-sizing: border-box;
+  z-index: 2;
+}
+
+/* Số thứ tự chương (01, 02, 03, 04) cực lớn làm watermark nền tạo điểm nhấn */
+.section-bg-num {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 160px;
+  font-weight: 900;
+  color: rgba(197, 222, 130, 0.12);
+  line-height: 1;
+  position: absolute;
+  right: 32px;
+  top: 24px;
+  pointer-events: none;
+  user-select: none;
+  letter-spacing: -6px;
+}
+
+/* Tag badge nhỏ phía trên */
+.section-tag-badge {
+  background: var(--sage);
+  color: #314d00;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-bottom: 14px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+}
+
+/* Tiêu đề chương H2 lớn 46px - 52px bold */
+.section-left-panel h2 {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 44px;
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1.22;
+  margin-bottom: 10px;
+  text-shadow: 0 2px 14px rgba(0,0,0,.28);
+}
+
+.section-desc {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.88);
+  line-height: 1.55;
+  margin-bottom: 22px;
+  max-width: 650px;
+}
+
+/* Khung tóm tắt nội dung (Agenda con) */
+.section-agenda-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  max-width: 650px;
+}
+
+.section-agenda-item {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  backdrop-filter: blur(8px);
+}
+
+.section-agenda-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: rgba(197, 222, 130, 0.22);
+  border: 1.5px solid var(--sage);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--sage);
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.section-agenda-item.coral-icon .section-agenda-icon {
+  background: rgba(253, 140, 110, 0.22);
+  border-color: var(--coral);
+  color: var(--coral);
+}
+
+.section-agenda-text {
+  flex: 1;
+}
+.section-agenda-text h4 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 2px;
+  line-height: 1.35;
+}
+.section-agenda-text p {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Cột phải: Hình ảnh minh họa chất lượng cao */
+.section-right-panel {
+  height: 100%;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+}
+
+.section-right-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to right, rgba(124,58,95,0.72) 0%, rgba(124,58,95,0.18) 28%, transparent 55%, rgba(30,10,25,0.65) 100%);
+  pointer-events: none;
+}
+
+.section-img-caption {
+  position: absolute;
+  bottom: 24px;
+  left: 28px;
+  right: 28px;
+  background: rgba(25, 8, 20, 0.82);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 12px;
+  padding: 13px 20px;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  z-index: 3;
+}
+.section-img-caption i {
+  font-size: 22px;
+  color: var(--sage);
+}
+.section-img-caption .cap-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: white;
+}
+.section-img-caption .cap-sub {
+  font-size: 12.5px;
+  color: rgba(255, 255, 255, 0.8);
+  margin-top: 2px;
+}
+
+/* ============================================================
+   SLIDE 14: CHUYỂN PHẦN IV (SPLIT LAYOUT 50/50 CÂN ĐỐI)
+   ============================================================ */
+#s14.slide.active {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 40px !important;
+  align-items: center !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  padding: 40px 60px !important;
+  box-sizing: border-box !important;
+  background: var(--plum) !important;
+  overflow: hidden !important;
+}
+
+#s14 .section-left-panel {
+  padding: 0 !important;
+  background: transparent !important;
+  height: auto !important;
+  justify-content: center !important;
+  max-width: 100% !important;
+}
+
+#s14 .s14-image-card {
+  position: relative;
+  height: 520px;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+
+#s14 .s14-image-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+#s14 .s14-image-overlay {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: rgba(26, 26, 26, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 10px;
+  padding: 12px 16px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+
+/* ============================================================
+   SLIDE 2: MỤC LỤC TOÀN BỘ ĐỀ ÁN (PROCESS FLOW CARD GRID)
+   ============================================================ */
+#s2 {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.90), rgba(255, 255, 255, 0.92)), url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1920&q=80') !important;
+  background-size: cover !important;
+  background-position: center !important;
+}
+
+.toc-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px 36px;
+  width: 92%;
+  max-width: 1550px;
+  margin: auto;
+  position: relative;
+}
+
+.toc-card {
+  background: #FFFFFF;
+  border: 1.5px solid #E2E8F0;
+  border-left: 5px solid var(--plum);
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  box-sizing: border-box;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.toc-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(124, 58, 95, 0.12);
+}
+
+.toc-num {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--plum);
+  background: #F3EAF1;
+  border-radius: 10px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.toc-text {
+  flex: 1;
+}
+
+.toc-text h4 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1E1E1E;
+  margin-bottom: 4px;
+  line-height: 1.35;
+}
+
+.toc-text p {
+  font-size: 14px;
+  color: #555555;
+  line-height: 1.45;
+  margin: 0;
+}
+
+/* Connectors: Mũi tên chỉ dẫn tiến trình tuần tự */
+.toc-connector-right {
+  position: absolute;
+  left: calc(100% + 18px);
+  top: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--coral);
+  font-size: 13px;
+  width: 28px;
+  height: 28px;
+  background: #FFFFFF;
+  border: 1.5px solid var(--coral);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  box-shadow: 0 2px 8px rgba(253, 140, 110, 0.25);
+}
+
+.toc-connector-down {
+  position: absolute;
+  top: calc(100% + 14px);
+  right: 36px;
+  transform: translate(0, -50%);
+  color: var(--coral);
+  font-size: 13px;
+  width: 28px;
+  height: 28px;
+  background: #FFFFFF;
+  border: 1.5px solid var(--coral);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  box-shadow: 0 2px 8px rgba(253, 140, 110, 0.25);
+}
+
+/* CHECKLIST */
+ul.check-list { list-style: none; }
+ul.check-list li {
+  padding: 8px 0 8px 32px;
+  position: relative;
+  font-size: 16px;
+  line-height: 1.6;
+  color: #333;
+}
+ul.check-list li::before {
+  content: '\f058';
+  font-family: 'Font Awesome 6 Free';
+  font-weight: 900;
+  position: absolute;
+  left: 0;
+  top: 9px;
+  color: var(--plum);
+  font-size: 16px;
+}
+
+/* PROGRESS BAR & NAV CONTROLS */
+#progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 5px;
+  background: var(--coral);
+  z-index: 100;
+  transition: width .3s ease !important;
+  border-radius: 0 4px 4px 0;
+}
+
+#slide-counter {
+  position: absolute;
+  bottom: 12px;
+  right: 24px;
+  z-index: 100;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: rgba(30,30,30,.45);
+  letter-spacing: .5px;
+  pointer-events: none;
+}
+.dark-counter #slide-counter {
+  color: rgba(255,255,255,.75);
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  z-index: 100;
+  transform: translateY(-50%);
+  background: rgba(124,58,95,.18);
+  border: none;
+  cursor: pointer;
+  width: 48px;
+  height: 76px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: var(--plum);
+  opacity: 0.5;
+  transition: opacity .2s, background .2s !important;
+}
+.nav-btn:hover {
+  opacity: 1;
+  background: rgba(124,58,95,.35);
+}
+#btn-prev { left: 8px; }
+#btn-next { right: 8px; }
+
+/* ============================================================
+   SPLIT SCREEN PANELS (Slide 1 & Slide 19)
+   ============================================================ */
+.split-image-panel {
+  width: 50%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 70px 60px;
+  box-sizing: border-box;
+}
+.split-content-panel {
+  width: 50%;
+  height: 100%;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 60px 80px;
+  box-sizing: border-box;
+}
+
+/* ============================================================
+   SLIDE 6 – BIỂU ĐỒ & THÔNG SỐ TÀI CHÍNH
+   ============================================================ */
+.chart-box-large {
+  width: 460px;
+  height: 460px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.chart-center-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.financial-metric-card {
+  flex: 1;
+  background: var(--white);
+  border-radius: 12px;
+  padding: 14px 20px;
+  border-left: 5px solid var(--plum);
+  box-shadow: 0 4px 14px rgba(0,0,0,.06);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.financial-metric-card i {
+  font-size: 24px;
+  color: var(--coral);
+}
+.financial-metric-card .val {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--plum);
+}
+.financial-metric-card .lbl {
+  font-size: 13px;
+  color: #666;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   BẢNG BIỂU: SLIDE 9, 11, 13, 17
+   ============================================================ */
+.table-card-wrapper {
+  width: 100%;
+  max-width: 1650px;
+  margin: 0 auto;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  background: var(--white);
+}
+
+.table-scroll-area {
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+}
+
+.wbs-table, .risk-table, .gantt-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.wbs-table { font-size: 16.5px; }
+.wbs-table thead th {
+  background: var(--plum);
+  color: var(--white);
+  padding: 16px 24px;
+  text-align: left;
+  font-size: 17px;
+  font-weight: 700;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.wbs-table tbody tr:nth-child(even) { background: #fcf9fb; }
+.wbs-table tbody tr:nth-child(odd) { background: var(--white); }
+.wbs-table td {
+  padding: 15px 24px;
+  border-bottom: 1px solid #ede4ea;
+  vertical-align: middle;
+  line-height: 1.6;
+}
+.wbs-table .lvl0 {
+  font-weight: 800;
+  font-size: 17.5px;
+  color: var(--plum);
+  background: #f3eaf1 !important;
+}
+.wbs-table .lvl1 { font-weight: 600; color: #3e192f; }
+.wbs-table .lvl2 { color: #555; padding-left: 42px; font-size: 15.5px; }
+
+/* SLIDE 17 - BẢNG RỦI RO */
+.risk-table { font-size: 16.5px; }
+.risk-table thead th {
+  background: var(--plum);
+  color: white;
+  padding: 18px 24px;
+  font-size: 17.5px;
+  font-weight: 700;
+  text-align: left;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.risk-table tbody tr:nth-child(even) { background: #fcf9fb; }
+.risk-table tbody tr:nth-child(odd) { background: var(--white); }
+.risk-table td {
+  padding: 17px 24px;
+  border-bottom: 1px solid #ede4ea;
+  font-size: 16px;
+  line-height: 1.6;
+  vertical-align: middle;
+}
+.risk-tag {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 13.5px;
+}
+.risk-tag.high { background: #fee2e2; color: #dc2626; }
+.risk-tag.med  { background: #fef3c7; color: #d97706; }
+.risk-tag.low  { background: #dcfce7; color: #16a34a; }
+
+/* SLIDE 13 - GANTT CHART */
+.gantt-table { font-size: 14px; }
+.gantt-table thead th {
+  background: var(--plum);
+  color: white;
+  padding: 12px 6px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,.2);
+  position: sticky;
+  top: 0;
+  z-index: 2;
+}
+.gantt-table thead th.task-col {
+  text-align: left;
+  padding-left: 20px;
+  width: 280px;
+}
+.gantt-table tbody tr:nth-child(even) { background: #faf5f8; }
+.gantt-table tbody tr:nth-child(odd) { background: var(--white); }
+.gantt-table td {
+  padding: 8px 6px;
+  border-right: 1px solid #ede4ea;
+  vertical-align: middle;
+}
+.gantt-table td.task-col {
+  font-size: 14px;
+  padding-left: 20px;
+  font-weight: 500;
+  color: #333;
+}
+.gantt-table td.task-col.group {
+  font-weight: 800;
+  font-size: 14.5px;
+  color: var(--plum);
+  background: #f3eaf1;
+}
+.gantt-bar {
+  height: 24px;
+  border-radius: 6px;
+  background: var(--plum);
+  box-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+.gantt-bar.sub { height: 18px; }
+.gantt-bar.sage  { background: var(--sage); }
+.gantt-bar.coral { background: var(--coral); }
+.gantt-bar.steel { background: var(--steel); }
+
+/* ============================================================
+   SLIDE 12 & 15: SƠ ĐỒ CÂY WBS & TỔ CHỨC (TĂNG CHIỀU RỘNG 130%, GAP 40-50PX)
+   ============================================================ */
+.tree-container, .org-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 1650px;
+  margin: 0 auto;
+}
+
+/* WBS TREE (Slide 12) */
+.wbs-root {
+  background: var(--plum);
+  color: var(--white);
+  border-radius: 16px;
+  padding: 20px 60px;
+  font-family: 'Montserrat', sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  box-shadow: 0 8px 26px rgba(124,58,95,.28);
+  text-align: center;
+}
+.tree-line-v {
+  width: 3.5px;
+  height: 48px; /* Gap 40px - 50px theo Yêu cầu 3 */
+  background: var(--plum);
+  opacity: .55;
+}
+.tree-branches-row {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+}
+.tree-branches-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 9%;
+  right: 9%;
+  height: 3.5px;
+  background: var(--plum);
+  opacity: .45;
+}
+.wbs-branch {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+.wbs-l1-box {
+  background: #f3eaf1;
+  border: 2.5px solid var(--plum);
+  border-radius: 14px;
+  padding: 18px 16px;
+  text-align: center;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--plum);
+  width: 100%;
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(124,58,95,.1);
+}
+.wbs-l1-box .time-tag {
+  font-size: 13.5px;
+  color: var(--coral);
+  font-weight: 700;
+  margin-top: 5px;
+}
+.wbs-l1-box .deliverable-tag {
+  font-size: 13px;
+  color: #444;
+  font-weight: 500;
+  line-height: 1.35;
+  margin-top: 3px;
+}
+.tree-line-v-sm {
+  width: 2.5px;
+  height: 42px; /* Gap 40px - 50px theo Yêu cầu 3 */
+  background: var(--plum);
+  opacity: .45;
+}
+.wbs-l2-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+}
+.wbs-l2-box {
+  background: var(--white);
+  border: 1.5px solid var(--steel);
+  border-radius: 10px;
+  padding: 13px 12px;
+  text-align: center;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: #333;
+  line-height: 1.45;
+  box-shadow: 0 2px 10px rgba(0,0,0,.06);
+}
+
+/* ORG CHART (Slide 15) */
+.org-box.root {
+  background: var(--plum);
+  color: white;
+  border: 2px solid var(--plum);
+  font-size: 22px;
+  font-weight: 800;
+  padding: 18px 52px;
+  border-radius: 16px;
+  min-width: 360px;
+  text-align: center;
+  box-shadow: 0 8px 26px rgba(124,58,95,.28);
+}
+.org-vline {
+  width: 3.5px;
+  height: 46px; /* Gap 40px - 50px theo Yêu cầu 3 */
+  background: var(--plum);
+  opacity: .5;
+}
+.org-box.mid {
+  background: #f3eaf1;
+  color: var(--plum);
+  border: 2px solid var(--plum);
+  font-size: 18.5px;
+  font-weight: 700;
+  padding: 16px 46px;
+  border-radius: 14px;
+  min-width: 330px;
+  text-align: center;
+  box-shadow: 0 4px 18px rgba(124,58,95,.1);
+}
+.org-branches-row {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+  position: relative;
+}
+.org-branches-row::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 9%;
+  right: 9%;
+  height: 3.5px;
+  background: var(--plum);
+  opacity: .45;
+}
+.org-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.org-box.dept-header {
+  width: 100%;
+  font-size: 17px;
+  font-weight: 700;
+  padding: 16px 14px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 14px rgba(124,58,95,.08);
+}
+.org-box.leaf {
+  background: white;
+  color: #333;
+  font-size: 14.5px;
+  font-weight: 500;
+  border: 1.5px solid var(--steel);
+  border-radius: 12px;
+  padding: 16px 16px;
+  line-height: 1.65;
+  width: 100%;
+  box-shadow: 0 3px 12px rgba(0,0,0,.06);
+}
+
+/* ============================================================
+   SLIDE 16 & 18: BALANCED GRIDS WITH PHOTOGRAPHY
+   ============================================================ */
+.staff-card {
+  background: var(--white);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 16px 20px;
+  border-left: 6px solid var(--plum);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.staff-card i { font-size: 26px; color: var(--plum); flex-shrink: 0; }
+.staff-card h4 { font-size: 17px; font-weight: 700; color: var(--plum); margin-bottom: 2px; }
+.staff-card p  { font-size: 13.5px; color: #555; line-height: 1.45; }
+
+.roadmap-card {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 16px 18px;
+  box-shadow: 0 4px 12px rgba(0,0,0,.06);
+  border-top: 4px solid var(--plum);
+  flex: 1;
+}
+.roadmap-card .g-num {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--coral);
+}
+.roadmap-card .g-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--plum);
+  margin: 4px 0 6px;
+}
+.roadmap-card .g-desc {
+  font-size: 13px;
+  color: #555;
+  line-height: 1.45;
+}
+
+/* FLOWCHART (Slide 8) */
+.flow-box {
+  background: var(--plum);
+  color: var(--white);
+  border-radius: 14px;
+  padding: 18px 20px; /* Tăng padding theo Yêu cầu 3 */
+  text-align: center;
+  font-size: 16px; /* Font 16px theo Yêu cầu 3 */
+  font-weight: 700;
+  width: 100%;
+  min-height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.4;
+  box-shadow: 0 4px 14px rgba(124,58,95,.18);
+}
+.flow-box.light { background: var(--white); color: var(--plum); border: 2.5px solid var(--plum); }
+.flow-arrow { font-size: 22px; color: var(--plum); padding: 0 6px; display: flex; align-items: center; flex-shrink: 0; }
+.flow-arrow-down { font-size: 24px; color: var(--coral); margin: 8px 0; display: flex; align-items: center; justify-content: center; }
+
+/* Custom scrollbars */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: rgba(124,58,95,0.25); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--plum); }
+</style>
+</head>
+<body>
+
+<div id="deck">
+  <!-- PROGRESS BAR -->
+  <div id="progress-bar"></div>
+
+  <!-- NAV BUTTONS -->
+  <button id="btn-prev" class="nav-btn" aria-label="Slide trước"><i class="fas fa-chevron-left"></i></button>
+  <button id="btn-next" class="nav-btn" aria-label="Slide tiếp theo"><i class="fas fa-chevron-right"></i></button>
+
+  <!-- SLIDE COUNTER -->
+  <div id="slide-counter">1 / 19</div>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 1 – BÌA (SPLIT SCREEN 50% ẢNH PHỐI CẢNH + 50% NỘI DUNG)
+       ═══════════════════════════════════════════ -->
+  <section class="slide active" id="s1">
+    <!-- Nửa màn hình trái: Ảnh phối cảnh Book & Coffee tràn viền -->
+    <div class="split-image-panel" style="background-image: linear-gradient(135deg, rgba(124,58,95,0.78), rgba(94,41,71,0.88)), url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=80');">
+      <div style="position:relative;z-index:2;">
+        <span style="background:var(--sage);color:#3a5a00;font-size:13px;font-weight:700;letter-spacing:1px;padding:6px 16px;border-radius:20px;display:inline-block;text-transform:uppercase;">
+          <i class="fas fa-star" style="margin-right:4px;"></i> Dự án Khởi nghiệp 2025 – 2026
+        </span>
+      </div>
+      <div style="position:relative;z-index:2;margin:auto 0;">
+        <div style="font-size:76px;color:var(--sage);margin-bottom:16px;"><i class="fas fa-book-open"></i></div>
+        <h1 style="font-family:'Montserrat',sans-serif;font-size:48px;font-weight:900;color:white;line-height:1.15;letter-spacing:-.5px;">Book &amp; Coffee</h1>
+        <p style="font-size:20px;color:rgba(255,255,255,.92);margin-top:14px;line-height:1.65;max-width:500px;">
+          Mô hình không gian cà phê tích hợp văn hóa đọc chuyên sâu, học tập và kết nối cộng đồng tri thức trẻ.
+        </p>
+      </div>
+      <div style="position:relative;z-index:2;display:flex;gap:20px;font-size:14.5px;color:rgba(255,255,255,.85);">
+        <div><i class="fas fa-map-marker-alt" style="color:var(--coral);margin-right:6px;"></i>Hà Nội</div>
+        <div><i class="fas fa-calendar-check" style="color:var(--coral);margin-right:6px;"></i>Khai trương: 01/09/2026</div>
+      </div>
+    </div>
+    <!-- Nửa màn hình phải: Thông tin dự án học thuật & Ban QLDA -->
+    <div class="split-content-panel">
+      <span style="background:#f3eaf1;color:var(--plum);font-size:13px;font-weight:700;letter-spacing:1px;padding:6px 18px;border-radius:20px;display:inline-block;margin-bottom:18px;align-self:flex-start;border:1.5px solid rgba(124,58,95,.2);">
+        <i class="fas fa-graduation-cap"></i>&nbsp; Quản Lý Dự Án – Bài Tập Nhóm Số 2
+      </span>
+      <h2 style="font-family:'Montserrat',sans-serif;font-size:30px;font-weight:800;color:var(--plum);line-height:1.35;margin-bottom:28px;">
+        Xây Dựng Biểu Đồ Cơ Cấu Phân Tách Công Việc (WBS)<br/>
+        <span style="color:var(--coral);">Dự án Thành lập Quán Cà phê Sách</span>
+      </h2>
+      <div style="display:flex;flex-direction:column;gap:18px;margin-bottom:32px;">
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:44px;height:44px;border-radius:10px;background:#fff3ef;display:flex;align-items:center;justify-content:center;color:var(--coral);font-size:18px;"><i class="fas fa-calendar-alt"></i></div>
+          <div><div style="font-size:12.5px;color:#888;font-weight:700;text-transform:uppercase;">Thời gian thực hiện</div><div style="font-size:17px;font-weight:700;color:#333;">18 tháng (01/03/2025 – 01/09/2026)</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:44px;height:44px;border-radius:10px;background:#f3fadf;display:flex;align-items:center;justify-content:center;color:#6b9a22;font-size:18px;"><i class="fas fa-building"></i></div>
+          <div><div style="font-size:12.5px;color:#888;font-weight:700;text-transform:uppercase;">Quy mô mặt bằng</div><div style="font-size:17px;font-weight:700;color:#333;">350 m² sàn · 1 trệt + 2 lầu + sân thượng mở</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:44px;height:44px;border-radius:10px;background:#f3eaf1;display:flex;align-items:center;justify-content:center;color:var(--plum);font-size:18px;"><i class="fas fa-coins"></i></div>
+          <div><div style="font-size:12.5px;color:#888;font-weight:700;text-transform:uppercase;">Tổng vốn đầu tư</div><div style="font-size:17px;font-weight:700;color:#333;">3.500.000.000 VNĐ (5 hạng mục chính)</div></div>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;">
+          <div style="width:44px;height:44px;border-radius:10px;background:#eef4f7;display:flex;align-items:center;justify-content:center;color:var(--steel);font-size:18px;"><i class="fas fa-users"></i></div>
+          <div><div style="font-size:12.5px;color:#888;font-weight:700;text-transform:uppercase;">Công suất phục vụ</div><div style="font-size:17px;font-weight:700;color:#333;">120–150 chỗ ngồi · 5.000+ đầu sách tuyển chọn</div></div>
+        </div>
+      </div>
+      <div style="height:2px;background:linear-gradient(90deg, var(--plum), var(--sage));border-radius:2px;margin-bottom:20px;"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          <div style="font-size:12px;font-weight:700;color:var(--steel);letter-spacing:1.5px;text-transform:uppercase;">Đơn vị thực hiện</div>
+          <div style="font-size:16px;color:#333;font-weight:700;margin-top:2px;">Trường Đại học Kinh tế Quốc dân (NEU)</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:12px;font-weight:700;color:var(--steel);letter-spacing:1.5px;text-transform:uppercase;">Chuyên ngành</div>
+          <div style="font-size:15px;color:#666;font-style:italic;">Khoa Khoa học Quản lý</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 2 – MỤC LỤC TOÀN BỘ ĐỀ ÁN (TIẾN TRÌNH TUẦN TỰ)
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s2">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-list-ul"></i>&nbsp; Nội dung trình bày</div>
+      <h2>Mục Lục Toàn Bộ Đề Án</h2>
+    </div>
+    <div class="slide-body" style="justify-content: center;">
+      <div class="toc-grid">
+        <!-- Hàng 1: 01 -> 02 -> 03 (nối xuống 04) -->
+        <div class="toc-card">
+          <span class="toc-num">01</span>
+          <div class="toc-text">
+            <h4>Giới thiệu Dự án</h4>
+            <p>Bối cảnh, cơ hội thị trường &amp; giá trị văn hóa</p>
+          </div>
+          <div class="toc-connector-right"><i class="fas fa-arrow-right"></i></div>
+        </div>
+
+        <div class="toc-card">
+          <span class="toc-num">02</span>
+          <div class="toc-text">
+            <h4>Mục tiêu &amp; Quy mô</h4>
+            <p>Mặt bằng 350 m², công suất 150 khách &amp; nhân sự</p>
+          </div>
+          <div class="toc-connector-right"><i class="fas fa-arrow-right"></i></div>
+        </div>
+
+        <div class="toc-card">
+          <span class="toc-num">03</span>
+          <div class="toc-text">
+            <h4>Ngân sách Đầu tư</h4>
+            <p>Phân bổ 3,5 tỷ VNĐ &amp; chỉ số tài chính cốt lõi</p>
+          </div>
+          <div class="toc-connector-down"><i class="fas fa-arrow-down"></i></div>
+        </div>
+
+        <!-- Hàng 2: 04 -> 05 -> 06 (nối xuống 07) -->
+        <div class="toc-card">
+          <span class="toc-num">04</span>
+          <div class="toc-text">
+            <h4>Thiết Kế Dòng (Process Flow)</h4>
+            <p>Sơ đồ 8 bước luồng công việc thi công liên tục</p>
+          </div>
+          <div class="toc-connector-right"><i class="fas fa-arrow-right"></i></div>
+        </div>
+
+        <div class="toc-card">
+          <span class="toc-num">05</span>
+          <div class="toc-text">
+            <h4>WBS – Bảng Phân Tách (P1)</h4>
+            <p>Gói Tuyển dụng, Đấu thầu, Chuẩn bị &amp; Xây thô</p>
+          </div>
+          <div class="toc-connector-right"><i class="fas fa-arrow-right"></i></div>
+        </div>
+
+        <div class="toc-card">
+          <span class="toc-num">06</span>
+          <div class="toc-text">
+            <h4>WBS – Bảng P2 &amp; Sơ Đồ Cây</h4>
+            <p>M&amp;E, PCCC, Nội thất &amp; Sơ đồ cây trực quan</p>
+          </div>
+          <div class="toc-connector-down"><i class="fas fa-arrow-down"></i></div>
+        </div>
+
+        <!-- Hàng 3: 07 -> 08 -> 09 -->
+        <div class="toc-card">
+          <span class="toc-num">07</span>
+          <div class="toc-text">
+            <h4>Tiến độ Dự án (Gantt)</h4>
+            <p>Kế hoạch 18 tháng kiểm soát đường găng</p>
+          </div>
+          <div class="toc-connector-right"><i class="fas fa-arrow-right"></i></div>
+        </div>
+
+        <div class="toc-card">
+          <span class="toc-num">08</span>
+          <div class="toc-text">
+            <h4>Sơ đồ Tổ chức &amp; Nhân sự</h4>
+            <p>Ban QLDA 11 vị trí &amp; 15 nhân sự vận hành quán</p>
+          </div>
+          <div class="toc-connector-right"><i class="fas fa-arrow-right"></i></div>
+        </div>
+
+        <div class="toc-card">
+          <span class="toc-num">09</span>
+          <div class="toc-text">
+            <h4>Rủi ro &amp; KPI Vận hành</h4>
+            <p>Quản trị 7 rủi ro &amp; Roadmap bàn giao khai trương</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 3 – SECTION 1: TỔNG QUAN DỰ ÁN (SPLIT SCREEN 55/45)
+       ═══════════════════════════════════════════ -->
+  <section class="slide slide-section" id="s3">
+    <!-- CỘT TRÁI (55%): THÔNG TIN CHƯƠNG & AGENDA TÓM TẮT -->
+    <div class="section-left-panel">
+      <div class="section-bg-num">01</div>
+      <div class="section-tag-badge">
+        <i class="fas fa-bookmark"></i>&nbsp; PHẦN I • TỔNG QUAN DỰ ÁN
+      </div>
+      <h2>Giới Thiệu Đề Án &amp;<br/>Mục Tiêu Phát Triển</h2>
+      <p class="section-desc">
+        Khởi tạo mô hình Quán Cà phê Sách (Book &amp; Coffee) tích hợp văn hóa đọc chuyên sâu, không gian học tập tiện nghi và giải pháp đầu tư sinh lời bền vững 3,5 tỷ VNĐ.
+      </p>
+      <div class="section-agenda-list">
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="section-agenda-text">
+            <h4>Bối cảnh thị trường &amp; Nhu cầu tích hợp</h4>
+            <p>Nắm bắt xu hướng không gian làm việc tĩnh lặng kết hợp thưởng thức cà phê đặc sản của giới trẻ tri thức đô thị.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-bullseye"></i></div>
+          <div class="section-agenda-text">
+            <h4>Mục tiêu cốt lõi: 120–150 chỗ, 5.000 đầu sách</h4>
+            <p>Xây dựng không gian văn hóa đọc bản quyền có sức chứa lớn, tạo trải nghiệm độc bản và giữ chân khách hàng dài lâu.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-building"></i></div>
+          <div class="section-agenda-text">
+            <h4>Quy mô 350 m² (1 trệt + 2 lầu + sân thượng)</h4>
+            <p>Quy hoạch công năng phân tầng chuyên biệt, đáp ứng 100% tiêu chuẩn PCCC tự động và an toàn vệ sinh thực phẩm.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item coral-icon">
+          <div class="section-agenda-icon"><i class="fas fa-coins"></i></div>
+          <div class="section-agenda-text">
+            <h4>Ngân sách 3,5 tỷ VNĐ &amp; Chỉ số tài chính</h4>
+            <p>Phân bổ 5 gói chi phí trọng yếu, tỷ suất sinh lời kỳ vọng ROI 18–20% và thời gian hoàn vốn 28–32 tháng.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- CỘT PHẢI (45%): ẢNH PHỐI CẢNH BOOK & COFFEE CHẤT LƯỢNG CAO TRÀN VIỀN -->
+    <div class="section-right-panel" style="background-image: url('https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=1200&q=80');">
+      <div class="section-img-caption">
+        <i class="fas fa-book-reader"></i>
+        <div>
+          <div class="cap-title">Không Gian Cà Phê Sách Ấm Cúng · Quy Mô 350 m²</div>
+          <div class="cap-sub">Tích hợp văn hóa đọc chuyên sâu, học tập và kết nối cộng đồng tri thức trẻ</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 4 – BỐI CẢNH (ẢNH MINH HỌA 45% SLIDE, CAO 460PX, BO GÓC 16PX)
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s4">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-info-circle"></i>&nbsp; Slide 04 · Giới thiệu</div>
+      <h2>Bối Cảnh &amp; Sự Cần Thiết Đầu Tư</h2>
+    </div>
+    <div class="slide-body">
+      <div style="display:flex;gap:30px;width:100%;max-width:1650px;margin:0 auto;align-items:stretch;">
+        <!-- Cột trái 55%: Nội dung chi tiết & KPI -->
+        <div style="flex:1.2;display:flex;flex-direction:column;gap:20px;justify-content:space-evenly;">
+          <div class="card" style="padding:26px 30px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+              <i class="fas fa-chart-line" style="color:var(--coral);font-size:26px;"></i>
+              <h4 style="font-size:21px;font-weight:700;color:var(--plum);">Xu hướng thị trường đô thị</h4>
+            </div>
+            <p style="font-size:17px;line-height:1.65;color:#444;">
+              Nhu cầu tìm kiếm không gian <strong>yên tĩnh – tích hợp</strong> giữa thưởng thức cà phê đặc sản và làm việc, học tập chuyên sâu đang tăng trưởng mạnh mẽ trong giới học sinh, sinh viên và nhân sự tri thức trẻ.
+            </p>
+          </div>
+          <div class="card card-sage" style="padding:26px 30px;">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+              <i class="fas fa-bullseye" style="color:var(--plum);font-size:26px;"></i>
+              <h4 style="font-size:21px;font-weight:700;color:var(--plum);">Tầm nhìn &amp; Lợi thế cạnh tranh kép</h4>
+            </div>
+            <p style="font-size:17px;line-height:1.65;color:#333;">
+              Mô hình kết hợp văn hóa đọc với dịch vụ F&amp;B chuyên nghiệp tạo nguồn doanh thu đa kênh, mang lại giá trị văn hóa cộng đồng và lòng trung thành bền vững của độc giả.
+            </p>
+          </div>
+          <div style="display:flex;gap:20px;">
+            <div class="card" style="flex:1;text-align:center;padding:20px 24px;">
+              <div class="kpi-num" style="font-size:58px;">5.000+</div>
+              <div class="kpi-label" style="font-size:16px;">đầu sách bản quyền chọn lọc</div>
+            </div>
+            <div class="card" style="flex:1;text-align:center;padding:20px 24px;">
+              <div class="kpi-num" style="font-size:58px;">120–150</div>
+              <div class="kpi-label" style="font-size:16px;">khách phục vụ đồng thời</div>
+            </div>
+          </div>
+        </div>
+        <!-- Cột phải 45%: Phóng to ảnh minh họa 45% slide, cao 460px, bo góc 16px theo Yêu cầu 3 -->
+        <div style="flex:1;min-height:460px;max-height:500px;border-radius:16px;overflow:hidden;box-shadow:var(--shadow);position:relative;background-size:cover;background-position:center;background-image:url('https://images.unsplash.com/photo-1495446815901-a7297e633e8d?auto=format&fit=crop&w=1000&q=80');display:flex;flex-direction:column;justify-content:flex-end;">
+          <div style="background:linear-gradient(transparent, rgba(30,10,25,0.88));padding:30px 28px;color:white;">
+            <div style="font-size:20px;font-weight:800;"><i class="fas fa-book-reader" style="color:var(--sage);margin-right:8px;"></i>Không Gian Cà Phê Sách Hiện Đại</div>
+            <div style="font-size:15px;color:rgba(255,255,255,0.9);margin-top:6px;line-height:1.5;">
+              Nơi giao thoa giữa ánh sáng ấm áp, hương vị cà phê nguyên chất và kho tàng tri thức bất tận.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 5 – MỤC TIÊU & QUY MÔ (KPI 58PX BOLD)
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s5">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-flag"></i>&nbsp; Slide 05 · Mục tiêu</div>
+      <h2>Mục Tiêu &amp; Quy Mô Dự Án</h2>
+    </div>
+    <div class="slide-body">
+      <div style="display:flex;flex-direction:column;gap:24px;width:100%;max-width:1650px;margin:0 auto;">
+        <!-- 4 thẻ KPI số to 58px bold -->
+        <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:20px;">
+          <div class="card" style="text-align:center;border-top:6px solid var(--coral);padding:22px 20px;">
+            <div class="kpi-num" style="font-size:58px;">18</div>
+            <div class="kpi-label">Tháng triển khai dự án<br/><span style="font-weight:400;font-size:13px;color:#777;">01/03/2025 – 01/09/2026</span></div>
+          </div>
+          <div class="card" style="text-align:center;border-top:6px solid var(--plum);padding:22px 20px;">
+            <div class="kpi-num" style="font-size:58px;color:var(--plum);">3,5 tỷ</div>
+            <div class="kpi-label">VNĐ tổng ngân sách<br/><span style="font-weight:400;font-size:13px;color:#777;">Vốn đầu tư ban đầu</span></div>
+          </div>
+          <div class="card" style="text-align:center;border-top:6px solid var(--sage);padding:22px 20px;">
+            <div class="kpi-num" style="font-size:58px;color:#6b9a22;">350</div>
+            <div class="kpi-label">m² diện tích mặt bằng<br/><span style="font-weight:400;font-size:13px;color:#777;">1 trệt + 2 lầu + sân thượng</span></div>
+          </div>
+          <div class="card" style="text-align:center;border-top:6px solid var(--steel);padding:22px 20px;">
+            <div class="kpi-num" style="font-size:58px;color:var(--steel);">15</div>
+            <div class="kpi-label">nhân sự vận hành chính thức<br/><span style="font-weight:400;font-size:13px;color:#777;">Sau khi khai trương quán</span></div>
+          </div>
+        </div>
+        <!-- 3 thẻ tầng & cột cam kết -->
+        <div style="display:grid;grid-template-columns:repeat(3, 1fr) 1.15fr;gap:20px;align-items:stretch;">
+          <div class="card" style="border-top:4px solid var(--plum);padding:22px 22px;">
+            <h4 style="font-size:18px;font-weight:700;color:var(--plum);margin-bottom:6px;"><i class="fas fa-store"></i> Tầng Trệt (120 m²)</h4>
+            <div style="font-family:'Montserrat',sans-serif;font-size:28px;font-weight:800;color:var(--coral);margin:4px 0;">120 m²</div>
+            <p style="font-size:14.5px;color:#555;line-height:1.55;">Quầy Barista máy pha 2 group · Hệ thống thanh toán POS · Phục vụ tại chỗ &amp; Takeaway</p>
+          </div>
+          <div class="card" style="border-top:4px solid var(--plum);padding:22px 22px;">
+            <h4 style="font-size:18px;font-weight:700;color:var(--plum);margin-bottom:6px;"><i class="fas fa-book"></i> Tầng 1 (120 m²)</h4>
+            <div style="font-family:'Montserrat',sans-serif;font-size:28px;font-weight:800;color:var(--coral);margin:4px 0;">120 m²</div>
+            <p style="font-size:14.5px;color:#555;line-height:1.55;">Không gian đọc sách tĩnh lặng · Kệ sách phân loại số hóa · Đèn đọc &amp; ổ cắm từng bàn</p>
+          </div>
+          <div class="card" style="border-top:4px solid var(--plum);padding:22px 22px;">
+            <h4 style="font-size:18px;font-weight:700;color:var(--plum);margin-bottom:6px;"><i class="fas fa-sun"></i> Tầng 2 &amp; Sân Thượng (110 m²)</h4>
+            <div style="font-family:'Montserrat',sans-serif;font-size:28px;font-weight:800;color:var(--coral);margin:4px 0;">110 m²</div>
+            <p style="font-size:14.5px;color:#555;line-height:1.55;">Phòng hội thảo workshop cách âm · Khu cà phê ngoài trời ngắm cảnh đường phố</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div class="card card-sage" style="flex:1;padding:16px 20px;">
+              <h4 style="font-size:15px;font-weight:700;color:var(--plum);margin-bottom:6px;"><i class="fas fa-certificate"></i> Tiêu chuẩn cam kết</h4>
+              <div style="font-size:13.5px;color:#333;line-height:1.65;">✅ Đạt chuẩn thẩm duyệt PCCC tự động<br/>✅ Đạt chứng nhận ATVSTP 100%<br/>✅ Điểm hòa vốn tài chính sau 6 tháng</div>
+            </div>
+            <div class="card" style="text-align:center;padding:12px 18px;">
+              <div style="font-size:13px;color:#777;margin-bottom:6px;font-weight:700;text-transform:uppercase;">Cơ cấu nhân sự quán (15 người)</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:center;">
+                <span class="badge">1 Quản lý</span><span class="badge">2 Thu ngân</span><span class="badge">6 Pha chế</span><span class="badge">6 Phục vụ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 6 – NGÂN SÁCH (DONUT 460PX + CHI TIẾT VẬT TƯ + THANH THÔNG SỐ TÀI CHÍNH)
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s6">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-coins"></i>&nbsp; Slide 06 · Tài chính</div>
+      <h2>Phân Bổ Ngân Sách Đầu Tư – 3.500.000.000 VNĐ</h2>
+    </div>
+    <div class="slide-body">
+      <div style="display:flex;flex-direction:column;gap:18px;width:100%;max-width:1650px;margin:0 auto;">
+        <!-- Phần trên: Donut Chart 460px + Danh sách chi tiết 5 hạng mục -->
+        <div style="display:flex;flex-direction:row;align-items:center;justify-content:center;gap:50px;width:100%;">
+          <!-- Donut Chart với nhãn trung tâm: 3,5 TỶ VNĐ - Tổng vốn đầu tư -->
+          <div class="chart-box-large">
+            <canvas id="budgetChart" width="460" height="460" style="width:460px;height:460px;"></canvas>
+            <div class="chart-center-label">
+              <div style="font-family:'Montserrat',sans-serif;font-size:32px;font-weight:900;color:var(--plum);line-height:1.1;">3,5 TỶ VNĐ</div>
+              <div style="font-size:13.5px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:1px;margin-top:4px;">Tổng vốn đầu tư</div>
+            </div>
+          </div>
+          <!-- Chi tiết cụ thể 5 hạng mục -->
+          <div style="flex:1;display:flex;flex-direction:column;gap:12px;max-width:780px;">
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;background:#fff;border-radius:12px;box-shadow:var(--shadow);border-left:6px solid var(--plum);">
+              <span style="width:16px;height:16px;border-radius:4px;background:var(--plum);display:inline-block;flex-shrink:0;"></span>
+              <div style="flex:1;">
+                <div style="font-size:16px;font-weight:700;color:var(--plum);">Thi công &amp; Nội thất (38%)</div>
+                <div style="font-size:13.5px;color:#555;margin-top:2px;">Phần thô, hệ vách kính cường lực, kệ sách gỗ thông, bàn ghế đơn &amp; nhóm</div>
+              </div>
+              <div style="font-family:'Montserrat',sans-serif;font-size:22px;font-weight:900;color:var(--plum);">1.330 tr.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;background:#fff;border-radius:12px;box-shadow:var(--shadow);border-left:6px solid var(--coral);">
+              <span style="width:16px;height:16px;border-radius:4px;background:var(--coral);display:inline-block;flex-shrink:0;"></span>
+              <div style="flex:1;">
+                <div style="font-size:16px;font-weight:700;color:var(--plum);">Trang thiết bị (22%)</div>
+                <div style="font-size:13.5px;color:#555;margin-top:2px;">Máy pha cafe 2 group, máy xay hạt, POS, âm thanh phân vùng, camera AI</div>
+              </div>
+              <div style="font-family:'Montserrat',sans-serif;font-size:22px;font-weight:900;color:var(--coral);">770 tr.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;background:#fff;border-radius:12px;box-shadow:var(--shadow);border-left:6px solid var(--sage);">
+              <span style="width:16px;height:16px;border-radius:4px;background:var(--sage);display:inline-block;flex-shrink:0;"></span>
+              <div style="flex:1;">
+                <div style="font-size:16px;font-weight:700;color:var(--plum);">Hệ thống M&amp;E &amp; PCCC (15%)</div>
+                <div style="font-size:13.5px;color:#555;margin-top:2px;">Nâng cấp nguồn điện 3 pha, điều hòa âm trần Daikin, hệ thống PCCC đạt chuẩn</div>
+              </div>
+              <div style="font-family:'Montserrat',sans-serif;font-size:22px;font-weight:900;color:#7aad2a;">525 tr.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;background:#fff;border-radius:12px;box-shadow:var(--shadow);border-left:6px solid var(--steel);">
+              <span style="width:16px;height:16px;border-radius:4px;background:var(--steel);display:inline-block;flex-shrink:0;"></span>
+              <div style="flex:1;">
+                <div style="font-size:16px;font-weight:700;color:var(--plum);">Sách &amp; Nguyên vật liệu (14%)</div>
+                <div style="font-size:13.5px;color:#555;margin-top:2px;">5.000 đầu sách bản quyền tuyển chọn, cà phê Cầu Đất cao cấp, siro &amp; trà</div>
+              </div>
+              <div style="font-family:'Montserrat',sans-serif;font-size:22px;font-weight:900;color:var(--steel);">490 tr.</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 20px;background:#fff;border-radius:12px;box-shadow:var(--shadow);border-left:6px solid #E8A0BF;">
+              <span style="width:16px;height:16px;border-radius:4px;background:#E8A0BF;display:inline-block;flex-shrink:0;"></span>
+              <div style="flex:1;">
+                <div style="font-size:16px;font-weight:700;color:var(--plum);">Chi phí dự phòng &amp; Khác (11%)</div>
+                <div style="font-size:13.5px;color:#555;margin-top:2px;">Ban QLDA, giấy phép pháp lý, marketing khai trương, quỹ dự phòng giá 11%</div>
+              </div>
+              <div style="font-family:'Montserrat',sans-serif;font-size:22px;font-weight:900;color:#c06080;">385 tr.</div>
+            </div>
+          </div>
+        </div>
+        <!-- Thanh thông số tài chính dưới cùng slide theo Yêu cầu 1 -->
+        <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:18px;width:100%;margin-top:4px;">
+          <div class="financial-metric-card">
+            <i class="fas fa-chart-pie"></i>
+            <div>
+              <div class="val">18% – 20% / năm</div>
+              <div class="lbl">Tỷ suất sinh lời kỳ vọng (ROI)</div>
+            </div>
+          </div>
+          <div class="financial-metric-card">
+            <i class="fas fa-history"></i>
+            <div>
+              <div class="val">28 – 32 tháng</div>
+              <div class="lbl">Thời gian hoàn vốn dự kiến</div>
+            </div>
+          </div>
+          <div class="financial-metric-card">
+            <i class="fas fa-balance-scale"></i>
+            <div>
+              <div class="val">65 lượt khách / ngày</div>
+              <div class="lbl">Điểm hòa vốn vận hành</div>
+            </div>
+          </div>
+          <div class="financial-metric-card">
+            <i class="fas fa-receipt"></i>
+            <div>
+              <div class="val">55.000 VNĐ / khách</div>
+              <div class="lbl">Chi tiêu trung bình (AOV)</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 7 – SECTION 2: THIẾT KẾ DÒNG (SPLIT SCREEN 55/45)
+       ═══════════════════════════════════════════ -->
+  <section class="slide slide-section" id="s7">
+    <!-- CỘT TRÁI (55%): THÔNG TIN CHƯƠNG & AGENDA TÓM TẮT -->
+    <div class="section-left-panel">
+      <div class="section-bg-num">02</div>
+      <div class="section-tag-badge">
+        <i class="fas fa-stream"></i>&nbsp; PHẦN II • PHƯƠNG PHÁP THIẾT KẾ DÒNG
+      </div>
+      <h2>Phương Pháp<br/>Thiết Kế Dòng (Flow Design)</h2>
+      <p class="section-desc">
+        Mô hình hóa trình tự triển khai thi công xây dựng và hoàn thiện dự án theo chuỗi công việc nhịp nhàng, tối ưu hóa nguồn lực và triệt tiêu lãng phí thời gian chờ.
+      </p>
+      <div class="section-agenda-list">
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-project-diagram"></i></div>
+          <div class="section-agenda-text">
+            <h4>Cơ sở lý thuyết phương pháp Thiết kế dòng</h4>
+            <p>Ứng dụng nguyên lý Line of Balance (LOB) cân bằng tiến độ và tạo nhịp thi công ổn định giữa các tổ đội chuyên môn.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-route"></i></div>
+          <div class="section-agenda-text">
+            <h4>Sơ đồ luồng 8 bước thi công tuần tự</h4>
+            <p>Kiểm soát 8 công đoạn liên tục: Chuẩn bị mặt bằng → Cổng biển hiệu → Xây thô → Điện → Nước → PCCC → Nội thất → Bàn giao.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-sync-alt"></i></div>
+          <div class="section-agenda-text">
+            <h4>Điều phối các gói công việc chạy song song</h4>
+            <p>Tuyển dụng Ban QLDA &amp; nhân sự quán, tổ chức đấu thầu 5 gói và thẩm duyệt hồ sơ bản vẽ song trùng với công tác phá dỡ.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item coral-icon">
+          <div class="section-agenda-icon"><i class="fas fa-check-double"></i></div>
+          <div class="section-agenda-text">
+            <h4>Kiểm định chất lượng &amp; Vận hành Dry-run</h4>
+            <p>Tư vấn giám sát độc lập nghiệm thu từng giai đoạn, chạy thử nghiệm thu 30 ngày bảo đảm khai trương chuẩn xác 01/09/2026.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- CỘT PHẢI (45%): ẢNH BẢN VẼ KỸ THUẬT & QUY HOẠCH NỘI THẤT TRÀN VIỀN -->
+    <div class="section-right-panel" style="background-image: url('https://images.unsplash.com/photo-1503387762-592deb58ef4e?auto=format&fit=crop&w=1200&q=80');">
+      <div class="section-img-caption">
+        <i class="fas fa-drafting-compass"></i>
+        <div>
+          <div class="cap-title">Bản Vẽ Kiến Trúc &amp; Quy Hoạch Thi Công Chuỗi</div>
+          <div class="cap-sub">Tối ưu hóa thời gian thực hiện qua sơ đồ luồng công việc 8 phân đoạn liên tục</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 8 – SƠ ĐỒ LUỒNG CÔNG VIỆC (2 HÀNG UỐN LƯỢN CHIẾM TRỌN BỀ NGANG)
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s8">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-stream"></i>&nbsp; Slide 08 · Flowchart</div>
+      <h2>Sơ Đồ Luồng Công Việc – Phương Pháp Thiết Kế Dòng</h2>
+    </div>
+    <div class="slide-body">
+      <div style="display:flex;flex-direction:column;gap:18px;width:100%;max-width:1650px;margin:0 auto;">
+        <!-- Hàng 1: Trái -> Phải (4 bước trải rộng 100% bề ngang) -->
+        <div style="display:flex;gap:16px;align-items:center;width:100%;">
+          <div style="flex:1;"><div class="flow-box">① Chuẩn bị mặt bằng<br/><span style="font-size:13.5px;opacity:.88;font-weight:400;">Tháo dỡ · Hàng rào chắn bụi</span></div></div>
+          <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+          <div style="flex:1;"><div class="flow-box">② Cổng &amp; Biển hiệu<br/><span style="font-size:13.5px;opacity:.88;font-weight:400;">Khung sắt · Chữ LED · Kính</span></div></div>
+          <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+          <div style="flex:1;"><div class="flow-box">③ Công trình chính<br/><span style="font-size:13.5px;opacity:.88;font-weight:400;">Xây thô · Chống thấm · Hoàn thiện</span></div></div>
+          <div class="flow-arrow"><i class="fas fa-arrow-right"></i></div>
+          <div style="flex:1;"><div class="flow-box">④ Hệ thống Điện<br/><span style="font-size:13.5px;opacity:.88;font-weight:400;">Điện 3 pha · Chiếu sáng · Điều hòa</span></div></div>
+        </div>
+        <!-- Mũi tên uốn lượn xuống hàng 2 (phía bên phải kết nối từ bước ④ xuống bước ⑤) -->
+        <div style="display:flex;justify-content:flex-end;padding-right:calc(12.5% - 20px);">
+          <div class="flow-arrow-down" style="font-size:30px;color:var(--coral);"><i class="fas fa-arrow-down"></i></div>
+        </div>
+        <!-- Hàng 2: Phải -> Trái (4 bước trải rộng 100% bề ngang) -->
+        <div style="display:flex;gap:16px;align-items:center;width:100%;">
+          <div style="flex:1;"><div class="flow-box light" style="background:#fff3ef;border-color:var(--coral);color:var(--coral);border-width:3px;">⑧ Vệ sinh &amp; Khai trương<br/><span style="font-size:13.5px;opacity:.95;font-weight:600;">Nghiệm thu · Khai trương 01/09</span></div></div>
+          <div class="flow-arrow" style="transform:rotate(180deg)"><i class="fas fa-arrow-right"></i></div>
+          <div style="flex:1;"><div class="flow-box light">⑦ Hạng mục phụ &amp; Sách<br/><span style="font-size:13.5px;opacity:.85;font-weight:400;">Kệ sách · Bàn ghế · Quầy Barista</span></div></div>
+          <div class="flow-arrow" style="transform:rotate(180deg)"><i class="fas fa-arrow-right"></i></div>
+          <div style="flex:1;"><div class="flow-box light">⑥ PCCC &amp; An ninh<br/><span style="font-size:13.5px;opacity:.85;font-weight:400;">PCCC tự động · Báo khói · Camera</span></div></div>
+          <div class="flow-arrow" style="transform:rotate(180deg)"><i class="fas fa-arrow-right"></i></div>
+          <div style="flex:1;"><div class="flow-box light">⑤ Hệ thống Nước<br/><span style="font-size:13.5px;opacity:.85;font-weight:400;">Cấp · Thoát · Tách mỡ · Dự phòng</span></div></div>
+        </div>
+        <!-- 3 Thẻ ghi chú dàn rộng 100% bề ngang theo Yêu cầu 3 -->
+        <div style="display:grid;grid-template-columns:repeat(3, 1fr);gap:24px;margin-top:12px;">
+          <div class="card card-sage" style="padding:24px 28px;">
+            <div style="font-size:18px;font-weight:700;color:var(--plum);margin-bottom:8px;"><i class="fas fa-tasks"></i> Song song với thi công</div>
+            <div style="font-size:15.5px;color:#444;line-height:1.65;">• Tuyển dụng Ban QLDA &amp; 15 nhân sự quán<br/>• Đấu thầu &amp; Lựa chọn nhà thầu nội thất, sách<br/>• Hoàn thiện hồ sơ thẩm duyệt bản vẽ M&amp;E</div>
+          </div>
+          <div class="card card-coral" style="padding:24px 28px;">
+            <div style="font-size:18px;font-weight:700;color:var(--plum);margin-bottom:8px;"><i class="fas fa-flag-checkered"></i> Giai đoạn kết thúc &amp; Vận hành</div>
+            <div style="font-size:15.5px;color:#444;line-height:1.65;">• Nhập 5.000 đầu sách &amp; dán mã vạch số hóa<br/>• Đào tạo chuyên sâu 15 nhân sự trong 2 tháng<br/>• Vận hành chạy thử Dry-run 30 ngày</div>
+          </div>
+          <div class="card" style="padding:24px 28px;border-left:6px solid var(--plum);">
+            <div style="font-size:18px;font-weight:700;color:var(--plum);margin-bottom:8px;"><i class="fas fa-shield-alt"></i> Kiểm soát chất lượng &amp; An toàn</div>
+            <div style="font-size:15.5px;color:#444;line-height:1.65;">• Đơn vị tư vấn giám sát độc lập kiểm định<br/>• Nghiệm thu thanh quyết toán từng mốc<br/>• Đạt giấy phép PCCC &amp; Vệ sinh ATTP 100%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 9 – WBS TABLE PART 1
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s9">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-sitemap"></i>&nbsp; Slide 09 · WBS</div>
+      <h2>WBS – Bảng Phân Tách Công Việc Theo Chu Kỳ (Phần 1)</h2>
+    </div>
+    <div class="slide-body">
+      <div class="table-card-wrapper">
+        <div class="table-scroll-area">
+          <table class="wbs-table">
+            <thead><tr><th style="width:60px;">#</th><th style="width:110px;">Mã WBS</th><th>Tên Nhiệm Vụ</th><th style="width:150px;">Giai đoạn</th></tr></thead>
+            <tbody>
+              <tr class="lvl0"><td>1</td><td>1</td><td class="lvl0">Tuyển dụng</td><td><span class="badge">Giai đoạn 1</span></td></tr>
+              <tr><td>2</td><td>1.1</td><td class="lvl1">Tuyển dụng nhân viên Ban quản lý dự án</td><td></td></tr>
+              <tr><td>3</td><td>1.2</td><td class="lvl1">Tuyển dụng nhân sự vận hành quán</td><td></td></tr>
+              <tr class="lvl0"><td>4</td><td>2</td><td class="lvl0">Đấu thầu &amp; Mua sắm</td><td><span class="badge">Giai đoạn 1</span></td></tr>
+              <tr><td>5</td><td>2.1</td><td class="lvl1">Lựa chọn nhà thầu tư vấn giám sát</td><td></td></tr>
+              <tr><td>6</td><td>2.2</td><td class="lvl1">Lựa chọn nhà thầu thi công hoàn thiện nội thất</td><td></td></tr>
+              <tr><td>7</td><td>2.3</td><td class="lvl1">Lựa chọn nhà cung cấp trang thiết bị &amp; máy POS</td><td></td></tr>
+              <tr><td>8</td><td>2.4</td><td class="lvl1">Lựa chọn nhà thầu thiết kế kiến trúc</td><td></td></tr>
+              <tr><td>9</td><td>2.5</td><td class="lvl1">Lựa chọn nhà cung cấp sách</td><td></td></tr>
+              <tr class="lvl0"><td>10</td><td>3</td><td class="lvl0">Các công tác chuẩn bị</td><td><span class="badge">Giai đoạn 2</span></td></tr>
+              <tr><td>11</td><td>3.1</td><td class="lvl1">Tháo dỡ công trình cũ &amp; Giải phóng mặt bằng</td><td></td></tr>
+              <tr><td>12</td><td>3.2</td><td class="lvl1">Làm hàng rào tạm</td><td></td></tr>
+              <tr><td>13</td><td>3.2.1</td><td class="lvl2">Lắp đặt bạt che chống bụi quanh khu vực thi công</td><td></td></tr>
+              <tr><td>14</td><td>3.2.2</td><td class="lvl2">Dựng rào chắn bảo vệ an toàn công trường</td><td></td></tr>
+              <tr class="lvl0"><td>15</td><td>4</td><td class="lvl0">Cổng, Biển hiệu &amp; Mặt tiền</td><td><span class="badge">Giai đoạn 2</span></td></tr>
+              <tr><td>16</td><td>4.1</td><td class="lvl1">Thi công khung sắt chịu lực mặt tiền</td><td></td></tr>
+              <tr><td>17</td><td>4.2</td><td class="lvl1">Biển hiệu chữ nổi LED thương hiệu</td><td></td></tr>
+              <tr><td>18</td><td>4.3</td><td class="lvl1">Lắp đặt cổng &amp; Cửa kính cường lực cách âm</td><td></td></tr>
+              <tr class="lvl0"><td>19</td><td>5</td><td class="lvl0">Công trình chính</td><td><span class="badge">Giai đoạn 2</span></td></tr>
+              <tr><td>20</td><td>5.1</td><td class="lvl1">Phần thô: Xây trát, chống thấm, ốp lát các tầng</td><td></td></tr>
+              <tr><td>21</td><td>5.2</td><td class="lvl1">Hoàn thiện: Sơn tường, trần thạch cao, sàn gỗ</td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 10 – SECTION 3: CƠ CẤU WBS & TIẾN ĐỘ (SPLIT SCREEN 55/45)
+       ═══════════════════════════════════════════ -->
+  <section class="slide slide-section" id="s10">
+    <!-- CỘT TRÁI (55%): THÔNG TIN CHƯƠNG & AGENDA TÓM TẮT -->
+    <div class="section-left-panel">
+      <div class="section-bg-num">03</div>
+      <div class="section-tag-badge">
+        <i class="fas fa-sitemap"></i>&nbsp; PHẦN III • CƠ CẤU WBS &amp; TIẾN ĐỘ GANTT
+      </div>
+      <h2>Cơ Cấu Phân Tách WBS &amp;<br/>Tiến Độ Dự Án (Gantt)</h2>
+      <p class="section-desc">
+        Hệ thống hóa toàn diện khối lượng công việc thành 10 gói thầu phân cấp và thiết lập biểu đồ Gantt 18 tháng quản trị nghiêm ngặt đường găng tiến độ.
+      </p>
+      <div class="section-agenda-list">
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-table"></i></div>
+          <div class="section-agenda-text">
+            <h4>Bảng WBS chi tiết 10 gói công việc</h4>
+            <p>Phân rã phạm vi dự án từ Cấp 0 (Tổng thể) đến Cấp 1, Cấp 2 và Cấp 3 rõ ràng theo từng chu kỳ thi công.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-code-branch"></i></div>
+          <div class="section-agenda-text">
+            <h4>Sơ đồ cây WBS trực quan 5 nhánh</h4>
+            <p>Mô hình hóa cấu trúc phân cấp, tích hợp thời gian thực hiện (tháng) và sản phẩm đầu ra (deliverables) từng nhánh.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-calendar-alt"></i></div>
+          <div class="section-agenda-text">
+            <h4>Biểu đồ Gantt 18 tháng (03/2025 – 09/2026)</h4>
+            <p>Kiểm soát mốc găng xây thô và hoàn thiện nội thất, phòng ngừa rủi ro chậm tiến độ bằng hệ số dự phòng thời gian.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item coral-icon">
+          <div class="section-agenda-icon"><i class="fas fa-flag-checkered"></i></div>
+          <div class="section-agenda-text">
+            <h4>Mốc nghiệm thu &amp; Khai trương 01/09/2026</h4>
+            <p>Bàn giao thô T10/2025, hoàn tất M&amp;E T11/2025, lắp đặt kệ sách T04/2026 và khai trương chính thức đúng hạn.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- CỘT PHẢI (45%): ẢNH KỸ SƯ QUẢN TRỊ DỰ ÁN & TIẾN ĐỘ TRÀN VIỀN -->
+    <div class="section-right-panel" style="background-image: url('https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=1200&q=80');">
+      <div class="section-img-caption">
+        <i class="fas fa-chart-bar"></i>
+        <div>
+          <div class="cap-title">Quản Trị Tiến Độ &amp; Kiểm Soát Đường Găng</div>
+          <div class="cap-sub">Phân rã 100% phạm vi công việc qua mô hình WBS và biểu đồ Gantt chuẩn mực</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 11 – WBS TABLE PART 2
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s11">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-sitemap"></i>&nbsp; Slide 11 · WBS</div>
+      <h2>WBS – Bảng Phân Tách Công Việc Theo Chu Kỳ (Phần 2)</h2>
+    </div>
+    <div class="slide-body">
+      <div class="table-card-wrapper">
+        <div class="table-scroll-area">
+          <table class="wbs-table">
+            <thead><tr><th style="width:60px;">#</th><th style="width:110px;">Mã WBS</th><th>Tên Nhiệm Vụ</th><th style="width:150px;">Giai đoạn</th></tr></thead>
+            <tbody>
+              <tr class="lvl0"><td>22</td><td>6</td><td class="lvl0">Hệ thống Điện trong và ngoài</td><td><span class="badge">Giai đoạn 3</span></td></tr>
+              <tr><td>23</td><td>6.1</td><td class="lvl1">Điện chiếu sáng &amp; Hệ thống ổ cắm cá nhân từng bàn</td><td></td></tr>
+              <tr><td>24</td><td>6.2</td><td class="lvl1">Điện bên ngoài, sân thượng &amp; Biển hiệu LED</td><td></td></tr>
+              <tr><td>25</td><td>6.3</td><td class="lvl1">Máy lạnh &amp; Điều hòa trung tâm 3 tầng</td><td></td></tr>
+              <tr class="lvl0"><td>26</td><td>7</td><td class="lvl0">Hệ thống Nước trong và ngoài</td><td><span class="badge">Giai đoạn 3</span></td></tr>
+              <tr><td>27</td><td>7.1</td><td class="lvl1">Hệ thống cấp nước quầy pha chế &amp; nhà vệ sinh</td><td></td></tr>
+              <tr><td>28</td><td>7.2</td><td class="lvl1">Hệ thống thoát nước &amp; Bể lọc mỡ quầy pha chế</td><td></td></tr>
+              <tr><td>29</td><td>7.3</td><td class="lvl1">Hố ga – Mương thoát nước đấu nối đô thị</td><td></td></tr>
+              <tr><td>30</td><td>7.4</td><td class="lvl1">Bể chứa nước ngầm dự phòng</td><td></td></tr>
+              <tr class="lvl0"><td>31</td><td>8</td><td class="lvl0">Hệ thống PCCC &amp; An ninh</td><td><span class="badge">Giai đoạn 3</span></td></tr>
+              <tr><td>32</td><td>8.1</td><td class="lvl1">Bình chữa cháy, cảm biến khói, đầu phun Sprinkler</td><td></td></tr>
+              <tr><td>33</td><td>8.2</td><td class="lvl1">Hệ thống Camera giám sát HD &amp; Báo động chống trộm</td><td></td></tr>
+              <tr class="lvl0"><td>34</td><td>9</td><td class="lvl0">Hạng mục phụ &amp; Nội thất</td><td><span class="badge">Giai đoạn 4</span></td></tr>
+              <tr><td>35</td><td>9.1</td><td class="lvl1">Thi công hệ thống kệ sách tường &amp; Kệ sách trung tâm</td><td></td></tr>
+              <tr><td>36</td><td>9.2</td><td class="lvl1">Lắp đặt bàn ghế làm việc cá nhân &amp; Bàn họp nhóm</td><td></td></tr>
+              <tr><td>37</td><td>9.3</td><td class="lvl1">Lắp đặt quầy pha chế Barista &amp; Máy móc pha chế</td><td></td></tr>
+              <tr><td>38</td><td>9.4</td><td class="lvl1">Cây xanh trang trí &amp; Đèn đọc sách chống cận</td><td></td></tr>
+              <tr class="lvl0"><td>39</td><td>10</td><td class="lvl0">Vệ sinh, chạy thử &amp; Bàn giao</td><td><span class="badge">Giai đoạn 5</span></td></tr>
+              <tr><td>40</td><td>10.1</td><td class="lvl1">Vệ sinh công nghiệp toàn bộ công trình</td><td></td></tr>
+              <tr><td>41</td><td>10.2</td><td class="lvl1">Nhập 5.000 đầu sách, phân loại thư mục &amp; dán mã vạch</td><td></td></tr>
+              <tr><td>42</td><td>10.3</td><td class="lvl1">Đào tạo 15 nhân sự &amp; Vận hành chạy thử nghiệm 14 ngày</td><td></td></tr>
+              <tr><td>43</td><td>10.4</td><td class="lvl1">Nghiệm thu toàn diện PCCC, ATVSTP &amp; Kỹ thuật</td><td></td></tr>
+              <tr><td>44</td><td>10.5</td><td class="lvl1">Bàn giao &amp; Khai trương chính thức</td><td><span class="badge badge-coral">Milestone 01/09</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 12 – SƠ ĐỒ CÂY WBS (NỞ RỘNG 130%, GAP 40-50PX, CHIẾM 80% CHIỀU CAO)
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s12">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-code-branch"></i>&nbsp; Slide 12 · WBS Tree</div>
+      <h2>Sơ Đồ Cây WBS – Cấu Trúc Phân Tách Toàn Dự Án</h2>
+    </div>
+    <div class="slide-body">
+      <div class="tree-container">
+        <!-- Root node -->
+        <div class="wbs-root">
+          🏪 DỰ ÁN QUÁN CÀ PHÊ SÁCH (BOOK &amp; COFFEE)
+          <div style="font-size:14px;font-weight:500;color:rgba(255,255,255,.9);margin-top:3px;">
+            Tổng tiến độ: 18 tháng (03/2025 – 09/2026) · Quy mô: 350 m² · Ngân sách: 3,5 Tỷ VNĐ
+          </div>
+        </div>
+        <div class="tree-line-v"></div>
+        <!-- 5 Branches Level 1 & Level 2 có Thời lượng & Đầu ra -->
+        <div class="tree-branches-row">
+          <div class="wbs-branch">
+            <div class="wbs-l1-box">
+              <div style="font-size:16px;font-weight:800;">1. Tuyển Dụng</div>
+              <div class="time-tag">⏱ 3 tháng (T3–T5/25)</div>
+              <div class="deliverable-tag">📦 Ban QLDA &amp; 15 NV quán</div>
+            </div>
+            <div class="tree-line-v-sm"></div>
+            <div class="wbs-l2-stack">
+              <div class="wbs-l2-box">1.1 Ban QLDA (11 vị trí)</div>
+              <div class="wbs-l2-box">1.2 Nhân sự quán (15 NV)</div>
+            </div>
+          </div>
+          <div class="wbs-branch">
+            <div class="wbs-l1-box">
+              <div style="font-size:16px;font-weight:800;">2. Đấu Thầu</div>
+              <div class="time-tag">⏱ 4 tháng (T4–T7/25)</div>
+              <div class="deliverable-tag">📦 5 Hợp đồng thầu ký kết</div>
+            </div>
+            <div class="tree-line-v-sm"></div>
+            <div class="wbs-l2-stack">
+              <div class="wbs-l2-box">2.1 Tư vấn giám sát</div>
+              <div class="wbs-l2-box">2.2 Thi công nội thất</div>
+              <div class="wbs-l2-box">2.3 Thiết bị &amp; POS</div>
+              <div class="wbs-l2-box">2.4 Thiết kế KTS</div>
+              <div class="wbs-l2-box">2.5 Nhà cấp 5k sách</div>
+            </div>
+          </div>
+          <div class="wbs-branch">
+            <div class="wbs-l1-box" style="background:var(--plum);color:white;border-color:var(--plum);">
+              <div style="font-size:16px;font-weight:800;">3–5. Thi Công</div>
+              <div class="time-tag" style="color:var(--sage);">⏱ 6 tháng (T5–T10/25)</div>
+              <div class="deliverable-tag" style="color:rgba(255,255,255,.95);">📦 Bàn giao thô &amp; hoàn thiện</div>
+            </div>
+            <div class="tree-line-v-sm" style="background:var(--plum);"></div>
+            <div class="wbs-l2-stack">
+              <div class="wbs-l2-box">3. Chuẩn bị mặt bằng</div>
+              <div class="wbs-l2-box">4. Cổng &amp; Biển LED</div>
+              <div class="wbs-l2-box">5.1 Xây thô các tầng</div>
+              <div class="wbs-l2-box">5.2 Hoàn thiện ốp lát</div>
+            </div>
+          </div>
+          <div class="wbs-branch">
+            <div class="wbs-l1-box">
+              <div style="font-size:16px;font-weight:800;">6–8. M&amp;E &amp; PCCC</div>
+              <div class="time-tag">⏱ 5 tháng (T7–T11/25)</div>
+              <div class="deliverable-tag">📦 Hệ thống vận hành chuẩn</div>
+            </div>
+            <div class="tree-line-v-sm"></div>
+            <div class="wbs-l2-stack">
+              <div class="wbs-l2-box">6. Điện 3 pha &amp; ĐH</div>
+              <div class="wbs-l2-box">7. Cấp thoát nước</div>
+              <div class="wbs-l2-box">8.1 Thiết bị PCCC</div>
+              <div class="wbs-l2-box">8.2 Camera an ninh</div>
+            </div>
+          </div>
+          <div class="wbs-branch">
+            <div class="wbs-l1-box" style="background:var(--coral);color:white;border-color:var(--coral);">
+              <div style="font-size:16px;font-weight:800;">9–10. Hoàn Công</div>
+              <div class="time-tag" style="color:white;">⏱ 6 tháng (T11/25–T8/26)</div>
+              <div class="deliverable-tag" style="color:white;">📦 Nghiệm thu &amp; Khai trương</div>
+            </div>
+            <div class="tree-line-v-sm" style="background:var(--coral);"></div>
+            <div class="wbs-l2-stack">
+              <div class="wbs-l2-box">9. Kệ sách &amp; Bàn ghế</div>
+              <div class="wbs-l2-box">10.1 Nhập 5.000 sách</div>
+              <div class="wbs-l2-box">10.2 Đào tạo nhân sự</div>
+              <div class="wbs-l2-box" style="background:#fff3ef;border-color:var(--coral);font-weight:700;color:var(--coral);">10.5 Khai trương 01/09</div>
+            </div>
+          </div>
+        </div>
+        <!-- Legend row -->
+        <div style="display:flex;gap:30px;margin-top:28px;justify-content:center;">
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;"><span style="display:inline-block;width:16px;height:16px;border-radius:4px;background:#f3eaf1;border:2px solid var(--plum);"></span>Chuẩn bị &amp; M&amp;E</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;"><span style="display:inline-block;width:16px;height:16px;border-radius:4px;background:var(--plum);"></span>Thi công chính</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;"><span style="display:inline-block;width:16px;height:16px;border-radius:4px;background:var(--coral);"></span>Hoàn công &amp; Khai trương</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px;font-weight:600;"><span style="display:inline-block;width:16px;height:16px;border-radius:4px;background:white;border:1.5px solid var(--steel);"></span>Nhiệm vụ cấp chi tiết</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 13 – GANTT CHART
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s13">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-calendar-alt"></i>&nbsp; Slide 13 · Gantt</div>
+      <h2>Biểu Đồ Gantt – Tiến Độ Dự Án 18 Tháng (03/2025 – 09/2026)</h2>
+    </div>
+    <div class="slide-body">
+      <div class="table-card-wrapper">
+        <div class="table-scroll-area">
+          <table class="gantt-table">
+            <thead>
+              <tr>
+                <th class="task-col">Nhóm công việc</th>
+                <th>T3<br/>'25</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th><th>T8</th><th>T9</th><th>T10</th><th>T11</th><th>T12</th>
+                <th>T1<br/>'26</th><th>T2</th><th>T3</th><th>T4</th><th>T5</th><th>T6</th><th>T7</th><th>T8</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="task-col group">1. Tuyển dụng &amp; Đấu thầu</td>
+                <td colspan="3" style="padding:6px 4px;"><div class="gantt-bar" style="width:100%;"></div></td>
+                <td colspan="15"></td>
+              </tr>
+              <tr>
+                <td class="task-col" style="padding-left:26px;">1.1 Tuyển dụng Ban QLDA</td>
+                <td colspan="2" style="padding:4px;"><div class="gantt-bar sub" style="width:100%;"></div></td>
+                <td colspan="16"></td>
+              </tr>
+              <tr>
+                <td class="task-col" style="padding-left:26px;">1.2 Đấu thầu &amp; chọn nhà thầu</td>
+                <td></td>
+                <td colspan="2" style="padding:4px;"><div class="gantt-bar sub sage" style="width:100%;"></div></td>
+                <td colspan="15"></td>
+              </tr>
+              <tr>
+                <td class="task-col group">2. Chuẩn bị &amp; Cổng, Biển hiệu</td>
+                <td colspan="2"></td>
+                <td colspan="2" style="padding:6px 4px;"><div class="gantt-bar coral" style="width:100%;"></div></td>
+                <td colspan="14"></td>
+              </tr>
+              <tr>
+                <td class="task-col" style="padding-left:26px;">Tháo dỡ &amp; Giải phóng mặt bằng</td>
+                <td colspan="2"></td>
+                <td style="padding:4px;"><div class="gantt-bar sub coral" style="width:100%;"></div></td>
+                <td colspan="15"></td>
+              </tr>
+              <tr>
+                <td class="task-col" style="padding-left:26px;">Cổng &amp; Biển hiệu chữ nổi LED</td>
+                <td colspan="3"></td>
+                <td style="padding:4px;"><div class="gantt-bar sub coral" style="width:100%;"></div></td>
+                <td colspan="14"></td>
+              </tr>
+              <tr>
+                <td class="task-col group">3. Công trình chính (Thô &amp; Hoàn thiện)</td>
+                <td colspan="3"></td>
+                <td colspan="6" style="padding:6px 4px;"><div class="gantt-bar" style="width:100%;"></div></td>
+                <td colspan="9"></td>
+              </tr>
+              <tr>
+                <td class="task-col" style="padding-left:26px;">Xây trát &amp; Phần thô 3 tầng</td>
+                <td colspan="3"></td>
+                <td colspan="3" style="padding:4px;"><div class="gantt-bar sub" style="width:100%;"></div></td>
+                <td colspan="12"></td>
+              </tr>
+              <tr>
+                <td class="task-col" style="padding-left:26px;">Hoàn thiện, sơn bả, sàn gỗ</td>
+                <td colspan="6"></td>
+                <td colspan="3" style="padding:4px;"><div class="gantt-bar sub" style="width:100%;"></div></td>
+                <td colspan="9"></td>
+              </tr>
+              <tr>
+                <td class="task-col group">4. Hệ thống M&amp;E + PCCC</td>
+                <td colspan="5"></td>
+                <td colspan="6" style="padding:6px 4px;"><div class="gantt-bar sage" style="width:100%;"></div></td>
+                <td colspan="7"></td>
+              </tr>
+              <tr>
+                <td class="task-col" style="padding-left:26px;">Hệ thống Điện &amp; Điều hòa trung tâm</td>
+                <td colspan="5"></td>
+                <td colspan="3" style="padding:4px;"><div class="gantt-bar sub sage" style="width:100%;"></div></td>
+                <td colspan="10"></td>
+              </tr>
+              <tr>
+                <td class="task-col" style="padding-left:26px;">Cấp thoát nước, PCCC, Camera HD</td>
+                <td colspan="7"></td>
+                <td colspan="3" style="padding:4px;"><div class="gantt-bar sub sage" style="width:100%;"></div></td>
+                <td colspan="8"></td>
+              </tr>
+              <tr>
+                <td class="task-col group">5. Nội thất &amp; Hạng mục phụ</td>
+                <td colspan="9"></td>
+                <td colspan="5" style="padding:6px 4px;"><div class="gantt-bar steel" style="width:100%;"></div></td>
+                <td colspan="4"></td>
+              </tr>
+              <tr>
+                <td class="task-col" style="padding-left:26px;">Kệ sách, Bàn ghế, Quầy pha chế</td>
+                <td colspan="9"></td>
+                <td colspan="4" style="padding:4px;"><div class="gantt-bar sub steel" style="width:100%;"></div></td>
+                <td colspan="5"></td>
+              </tr>
+              <tr>
+                <td class="task-col group">6. Vệ sinh, Nhập sách &amp; Bàn giao</td>
+                <td colspan="14"></td>
+                <td colspan="4" style="padding:6px 4px;"><div class="gantt-bar coral" style="width:100%;"></div></td>
+              </tr>
+              <tr>
+                <td class="task-col" style="padding-left:26px;">Nhập 5.000 đầu sách &amp; đào tạo nhân viên</td>
+                <td colspan="14"></td>
+                <td colspan="2" style="padding:4px;"><div class="gantt-bar sub coral" style="width:100%;"></div></td>
+                <td colspan="2"></td>
+              </tr>
+              <tr style="background:#fff3ef;">
+                <td class="task-col" style="font-weight:800;color:var(--coral);font-size:14px;">🏁 KHAI TRƯƠNG CHÍNH THỨC</td>
+                <td colspan="17"></td>
+                <td style="padding:4px;"><div style="height:22px;width:22px;border-radius:50%;background:var(--coral);margin:0 auto;box-shadow:0 2px 8px rgba(253,140,110,.5);"></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 14 – SECTION 4: TỔ CHỨC & RỦI RO (SPLIT LAYOUT 50/50)
+       ═══════════════════════════════════════════ -->
+  <section class="slide slide-section" id="s14">
+    <!-- CỘT BÊN TRÁI: GIỮ NGUYÊN NỘI DUNG HIỆN TẠI -->
+    <div class="section-left-panel">
+      <div class="section-bg-num">04</div>
+      <div class="section-tag-badge">
+        <i class="fas fa-users-cog"></i>&nbsp; PHẦN IV • TỔ CHỨC, NHÂN SỰ &amp; RỦI RO
+      </div>
+      <h2>Cơ Cấu Tổ Chức Ban QLDA,<br/>Nhân Sự &amp; Quản Lý Rủi Ro</h2>
+      <p class="section-desc">
+        Hoàn thiện mô hình bộ máy quản lý điều hành dự án tinh gọn, xây dựng đội ngũ vận hành quán chuyên nghiệp và chủ động kiểm soát 7 rủi ro trọng điểm.
+      </p>
+      <div class="section-agenda-list">
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-sitemap"></i></div>
+          <div class="section-agenda-text">
+            <h4>Cơ cấu tổ chức Ban QLDA (11 vị trí)</h4>
+            <p>Phân định trách nhiệm rõ ràng: Giám đốc dự án, Phó GĐ, KTS, Kỹ sư M&amp;E, Kế toán trưởng &amp; 5 Quản lý chuyên môn.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-user-friends"></i></div>
+          <div class="section-agenda-text">
+            <h4>Đội ngũ nhân sự vận hành quán (15 người)</h4>
+            <p>1 Quản lý cửa hàng, 2 Thu ngân, 6 Barista pha chế &amp; 6 Phục vụ được đào tạo tay nghề chuẩn mực 2 tháng trước khai trương.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item">
+          <div class="section-agenda-icon"><i class="fas fa-shield-alt"></i></div>
+          <div class="section-agenda-text">
+            <h4>Ma trận quản trị 7 rủi ro dự án</h4>
+            <p>Xây dựng kịch bản ứng phó cho các rủi ro: chậm tiến độ, trượt giá vật tư, thẩm duyệt PCCC và biến động nhân sự.</p>
+          </div>
+        </div>
+        <div class="section-agenda-item coral-icon">
+          <div class="section-agenda-icon"><i class="fas fa-map-signs"></i></div>
+          <div class="section-agenda-text">
+            <h4>Roadmap bàn giao 4 giai đoạn &amp; Tiêu chuẩn</h4>
+            <p>Lộ trình nghiệm thu chi tiết, chạy thử nghiệm thu 30 ngày và sẵn sàng mở cửa đón khách chính thức 01/09/2026.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- CỘT BÊN PHẢI: KHUNG ẢNH TRỰC QUAN CAO CẤP CAO 520PX LẤP ĐẦY KHOẢNG TRỐNG -->
+    <div class="s14-image-card" style="position: relative; height: 520px; border-radius: 16px; overflow: hidden; box-shadow: 0 12px 30px rgba(0,0,0,0.25);">
+      <img src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80" alt="Đội ngũ vận hành &amp; nhân sự chuyên nghiệp" style="width: 100%; height: 100%; object-fit: cover; display: block;" />
+      <div style="position: absolute; bottom: 20px; left: 20px; right: 20px; background: rgba(26, 26, 26, 0.85); backdrop-filter: blur(8px); border-radius: 10px; padding: 12px 16px; color: #fff; display: flex; align-items: center; gap: 14px; border: 1px solid rgba(255,255,255,0.15);">
+        <i class="fas fa-users" style="font-size: 22px; color: var(--sage); flex-shrink: 0;"></i>
+        <div>
+          <div style="font-size: 15px; font-weight: 700; color: #fff;">Ban Quản Lý Dự Án &amp; Đội Ngũ Vận Hành Chuyên Nghiệp</div>
+          <div style="font-size: 12.5px; color: rgba(255, 255, 255, 0.85); margin-top: 2px;">26 nhân sự hạt nhân cam kết chất lượng dịch vụ và an toàn vận hành dài hạn</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 15 – SƠ ĐỒ TỔ CHỨC (NỞ RỘNG 130%, GAP 40-50PX)
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s15">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-users-cog"></i>&nbsp; Slide 15 · Tổ chức</div>
+      <h2>Sơ Đồ Cơ Cấu Tổ Chức Ban Quản Lý Dự Án</h2>
+    </div>
+    <div class="slide-body">
+      <div class="org-container">
+        <!-- Root: Giám Đốc Dự Án -->
+        <div class="org-box root">
+          <div style="font-size:19px;font-weight:800;"><i class="fas fa-user-tie" style="margin-right:8px;"></i>Giám Đốc Dự Án</div>
+          <div style="font-size:13px;font-weight:500;color:rgba(255,255,255,.9);margin-top:4px;line-height:1.45;">
+            • Quản lý toàn diện tiến độ 18 tháng &amp; ngân quỹ 3,5 tỷ VNĐ<br/>
+            • Đại diện chủ đầu tư phê duyệt giải ngân và nghiệm thu dự án
+          </div>
+        </div>
+        <div class="org-vline"></div>
+        <!-- Mid: Phó Giám Đốc Dự Án -->
+        <div class="org-box mid">
+          <div style="font-size:17px;font-weight:700;"><i class="fas fa-user" style="margin-right:6px;color:var(--plum);"></i>Phó Giám Đốc Dự Án</div>
+          <div style="font-size:13px;font-weight:500;color:#555;margin-top:4px;line-height:1.45;">
+            • Trực tiếp điều hành công trường &amp; xử lý xung đột kỹ thuật<br/>
+            • Đôn đốc các nhà thầu thi công đúng cam kết từng giai đoạn
+          </div>
+        </div>
+        <div class="org-vline"></div>
+        <!-- 5 Functional Departments có 2 nhiệm vụ then chốt -->
+        <div class="org-branches-row">
+          <div class="org-col" style="flex:0.95;">
+            <div class="org-box dept-header" style="background:#f3eaf1;color:var(--plum);border:2px solid var(--plum);"><i class="fas fa-user-edit" style="margin-right:4px;"></i>Thư Ký Dự Án</div>
+            <div class="org-vline" style="height:36px;"></div>
+            <div class="org-box leaf">
+              • Quản lý hồ sơ pháp lý, hợp đồng kinh tế và công văn<br/>
+              • Lập biên bản họp giao ban tuần &amp; điều phối liên lạc
+            </div>
+          </div>
+          <div class="org-col" style="flex:1;">
+            <div class="org-box dept-header" style="background:#f3eaf1;color:var(--plum);border:2px solid var(--plum);"><i class="fas fa-drafting-compass" style="margin-right:4px;"></i>Kiến Trúc Sư</div>
+            <div class="org-vline" style="height:36px;"></div>
+            <div class="org-box leaf">
+              • Thẩm định bản vẽ thiết kế không gian 350m² &amp; nội thất<br/>
+              • Giám sát tác giả, kiểm định vật tư gỗ thông và hoàn thiện
+            </div>
+          </div>
+          <div class="org-col" style="flex:1;">
+            <div class="org-box dept-header" style="background:#f3eaf1;color:var(--plum);border:2px solid var(--plum);"><i class="fas fa-bolt" style="margin-right:4px;"></i>Kỹ Sư M&amp;E</div>
+            <div class="org-vline" style="height:36px;"></div>
+            <div class="org-box leaf">
+              • Giám sát thi công hệ thống điện 3 pha, điều hòa &amp; cấp thoát<br/>
+              • Thẩm duyệt và nghiệm thu hệ thống PCCC tự động an toàn
+            </div>
+          </div>
+          <div class="org-col" style="flex:1;">
+            <div class="org-box dept-header" style="background:#f3eaf1;color:var(--plum);border:2px solid var(--plum);"><i class="fas fa-calculator" style="margin-right:4px;"></i>Kế Toán Trưởng</div>
+            <div class="org-vline" style="height:36px;"></div>
+            <div class="org-box leaf">
+              • Kiểm soát định mức chi tiêu theo 5 hạng mục ngân sách<br/>
+              • Lập báo cáo dòng tiền hàng tuần &amp; quyết toán hợp đồng
+            </div>
+          </div>
+          <div class="org-col" style="flex:1.75;">
+            <div class="org-box dept-header" style="background:var(--plum);color:white;border:2px solid var(--plum);"><i class="fas fa-tasks" style="margin-right:6px;"></i>Các Quản Lý Chuyên Môn</div>
+            <div class="org-vline" style="height:36px;"></div>
+            <div style="display:flex;gap:6px;width:100%;">
+              <div class="org-box leaf" style="flex:1;font-size:12.5px;padding:12px 5px;text-align:center;">
+                <strong style="color:var(--plum);">Nguồn vốn</strong><br/>
+                Theo dõi giải ngân &amp; dự phòng
+              </div>
+              <div class="org-box leaf" style="flex:1;font-size:12.5px;padding:12px 5px;text-align:center;">
+                <strong style="color:var(--plum);">Khối lượng</strong><br/>
+                Bóc tách vật tư đúng bản vẽ
+              </div>
+              <div class="org-box leaf" style="flex:1;font-size:12.5px;padding:12px 5px;text-align:center;">
+                <strong style="color:var(--plum);">Chất lượng</strong><br/>
+                Checklist kỹ thuật thi công
+              </div>
+              <div class="org-box leaf" style="flex:1;font-size:12.5px;padding:12px 5px;text-align:center;">
+                <strong style="color:var(--plum);">Tiến độ</strong><br/>
+                Đôn đốc mốc đường găng
+              </div>
+              <div class="org-box leaf" style="flex:1;font-size:12.5px;padding:12px 5px;text-align:center;">
+                <strong style="color:var(--plum);">ATLĐ</strong><br/>
+                An toàn PCCC &amp; giàn giáo
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 16 – NHÂN SỰ VẬN HÀNH (ẢNH 45% SLIDE, CAO 440PX - 480PX, BO GÓC 16PX)
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s16">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-id-badge"></i>&nbsp; Slide 16 · Nhân sự</div>
+      <h2>Nhân Sự Vận Hành &amp; Mô Tả Chức Năng Chính</h2>
+    </div>
+    <div class="slide-body">
+      <div style="display:flex;gap:28px;width:100%;max-width:1650px;margin:0 auto;align-items:stretch;">
+        <!-- Cột trái 55%: 8 thẻ nhân sự Ban QLDA chia 2 cột nhỏ -->
+        <div style="flex:1.15;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:space-between;">
+          <div class="staff-card"><i class="fas fa-user-tie"></i><div><h4>Giám Đốc Dự Án</h4><p>Tổ chức điều hành tổng thể, quản trị ngân sách 3,5 tỷ và chỉ đạo giải quyết rủi ro</p></div></div>
+          <div class="staff-card"><i class="fas fa-calculator"></i><div><h4>Kế Toán Trưởng</h4><p>Quản lý tài chính, kiểm soát giải ngân theo 5 gói thầu, đề xuất giải pháp tiết kiệm</p></div></div>
+          <div class="staff-card"><i class="fas fa-user-check"></i><div><h4>Phó Giám Đốc Dự Án</h4><p>Lập kế hoạch tiến độ, điều phối nhà thầu tại công trường, nghiệm thu từng đợt</p></div></div>
+          <div class="staff-card"><i class="fas fa-piggy-bank"></i><div><h4>Quản Lý Nguồn Vốn</h4><p>Theo dõi dòng tiền chi tiêu định kỳ, quản lý quỹ dự phòng 11% phòng ngừa biến động</p></div></div>
+          <div class="staff-card"><i class="fas fa-drafting-compass"></i><div><h4>Kiến Trúc Sư</h4><p>Thiết kế không gian quán, kiểm tra quy cách vật liệu nội thất gỗ và giám sát tác giả</p></div></div>
+          <div class="staff-card"><i class="fas fa-balance-scale"></i><div><h4>Quản Lý Chất Lượng</h4><p>Xây dựng quy chuẩn nghiệm thu, giám sát checklist kỹ thuật thi công từng hạng mục</p></div></div>
+          <div class="staff-card"><i class="fas fa-bolt"></i><div><h4>Kỹ Sư M&amp;E</h4><p>Thiết kế &amp; lắp đặt hệ thống điện 3 pha, điều hòa, PCCC và hỗ trợ kỹ thuật máy móc</p></div></div>
+          <div class="staff-card"><i class="fas fa-hard-hat"></i><div><h4>An Toàn LĐ &amp; VSMT</h4><p>Kiểm tra an toàn lao động công trường, phòng ngừa cháy nổ và bảo đảm vệ sinh</p></div></div>
+        </div>
+        <!-- Cột phải 45%: Thẻ nhân sự quán + Ảnh minh họa Barista chuyên nghiệp Unsplash cao 440px - 480px theo Yêu cầu 3 -->
+        <div style="flex:1;display:flex;flex-direction:column;gap:16px;justify-content:space-between;">
+          <div class="card card-sage" style="padding:20px 24px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+              <h4 style="font-size:17px;font-weight:700;color:var(--plum);"><i class="fas fa-store-alt" style="margin-right:8px;"></i>Đội Ngũ Quán (15 người sau khai trương)</h4>
+              <span class="badge">Vận hành</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:14px;">
+              <div style="background:white;padding:10px 14px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.05);display:flex;justify-content:space-between;">
+                <span>Quản lý cửa hàng</span><strong>×1</strong>
+              </div>
+              <div style="background:white;padding:10px 14px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.05);display:flex;justify-content:space-between;">
+                <span>Thu ngân quầy POS</span><strong>×2</strong>
+              </div>
+              <div style="background:white;padding:10px 14px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.05);display:flex;justify-content:space-between;">
+                <span>Barista pha chế</span><strong>×6</strong>
+              </div>
+              <div style="background:white;padding:10px 14px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.05);display:flex;justify-content:space-between;">
+                <span>Nhân viên phục vụ</span><strong>×6</strong>
+              </div>
+            </div>
+          </div>
+          <!-- Ảnh quầy Barista chuyên nghiệp Unsplash phóng to 45% slide, cao 350px-440px, bo góc 16px theo Yêu cầu 3 -->
+          <div style="flex:1;border-radius:16px;overflow:hidden;box-shadow:var(--shadow);position:relative;background-size:cover;background-position:center;background-image:url('https://images.unsplash.com/photo-1442512595331-e89e73853f31?auto=format&fit=crop&w=900&q=80');min-height:340px;display:flex;flex-direction:column;justify-content:flex-end;">
+            <div style="background:linear-gradient(transparent, rgba(30,10,25,0.88));padding:24px 26px;color:white;">
+              <div style="font-size:18px;font-weight:800;"><i class="fas fa-mug-hot" style="color:var(--coral);margin-right:8px;"></i>Đội Ngũ Barista Chuyên Nghiệp</div>
+              <div style="font-size:14px;color:rgba(255,255,255,0.92);margin-top:5px;line-height:1.45;">Trải qua 2 tháng đào tạo tay nghề chiết xuất cà phê chuẩn mực quốc tế &amp; cung cách phục vụ chuẩn mực.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 17 – QUẢN LÝ RỦI RO
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s17">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-exclamation-triangle"></i>&nbsp; Slide 17 · Rủi ro</div>
+      <h2>Quản Lý Rủi Ro Dự Án</h2>
+    </div>
+    <div class="slide-body">
+      <div class="table-card-wrapper">
+        <div class="table-scroll-area">
+          <table class="risk-table">
+            <thead>
+              <tr><th style="width:40px;">#</th><th>Rủi ro nhận diện</th><th style="width:130px;">Mức độ</th><th>Biện pháp ứng phó</th><th style="width:160px;">Trách nhiệm</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td><strong>Chậm tiến độ thi công</strong> do thời tiết xấu hoặc nhà thầu chậm trễ</td><td><span class="risk-tag high">Cao</span></td><td>Lập kế hoạch dự phòng, cài điều khoản phạt hợp đồng, dự phòng 10% thời gian cho mỗi mốc giai đoạn</td><td>QL Tiến độ</td></tr>
+              <tr><td>2</td><td><strong>Vượt ngân sách</strong> do biến động giá vật liệu xây dựng và nội thất</td><td><span class="risk-tag high">Cao</span></td><td>Ký hợp đồng đơn giá cố định trọn gói, duy trì quỹ dự phòng 11%, rà soát chi tiêu tài chính hàng tuần</td><td>Kế toán trưởng</td></tr>
+              <tr><td>3</td><td><strong>Không đạt chứng nhận PCCC</strong> khi cơ quan chức năng nghiệm thu</td><td><span class="risk-tag high">Cao</span></td><td>Thẩm duyệt bản vẽ PCCC từ đầu, thuê tư vấn độc lập giám sát thi công, kiểm tra chạy thử giữa kỳ</td><td>Kỹ sư M&amp;E</td></tr>
+              <tr><td>4</td><td><strong>Thiếu hụt nhân sự vận hành</strong> có tay nghề Barista &amp; kỹ năng dịch vụ</td><td><span class="risk-tag med">Trung bình</span></td><td>Tuyển dụng sớm từ T12/2025, tổ chức khóa đào tạo 2 tháng trước khai trương, liên kết trường nghề</td><td>Phó Giám đốc</td></tr>
+              <tr><td>5</td><td><strong>Cạnh tranh gay gắt</strong> từ các chuỗi cà phê sách lân cận trên địa bàn</td><td><span class="risk-tag med">Trung bình</span></td><td>Tạo sự khác biệt: 5.000 đầu sách tuyển chọn, không gian 3 tầng tĩnh lặng, sự kiện văn hóa định kỳ</td><td>Giám đốc Dự án</td></tr>
+              <tr><td>6</td><td><strong>Sự cố kỹ thuật M&amp;E</strong> (mất điện, rò rỉ nước, điều hòa hỏng) sau khai trương</td><td><span class="risk-tag low">Thấp</span></td><td>Cam kết bảo hành nhà thầu 12 tháng, diễn tập xử lý sự cố cho nhân viên, hợp đồng bảo trì định kỳ</td><td>Kỹ sư M&amp;E</td></tr>
+              <tr><td>7</td><td><strong>Rủi ro an toàn vệ sinh thực phẩm</strong> trong phục vụ đồ uống</td><td><span class="risk-tag low">Thấp</span></td><td>Tập huấn 100% nhân viên đạt chứng chỉ ATVSTP, quy trình kiểm soát nguồn nguyên liệu có hóa đơn</td><td>QL Chất lượng</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 18 – KPI (62PX BOLD) & ROADMAP BÀN GIAO 4 GIAI ĐOẠN
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s18">
+    <div class="slide-header">
+      <div class="tag"><i class="fas fa-chart-bar"></i>&nbsp; Slide 18 · KPI</div>
+      <h2>Kết Quả Kỳ Vọng &amp; Kế Hoạch Bàn Giao</h2>
+    </div>
+    <div class="slide-body">
+      <div style="display:flex;flex-direction:column;gap:20px;width:100%;max-width:1650px;margin:0 auto;">
+        <!-- Top: 4 thẻ KPI số to 62px bold theo Yêu cầu 2 -->
+        <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:20px;">
+          <div class="card" style="text-align:center;border-top:5px solid var(--coral);padding:18px 20px;">
+            <i class="fas fa-book-open" style="font-size:28px;color:var(--plum);margin-bottom:6px;"></i>
+            <div class="kpi-num" style="font-size:62px;">5.000+</div>
+            <div class="kpi-label">Đầu sách có bản quyền khi mở cửa</div>
+          </div>
+          <div class="card" style="text-align:center;border-top:5px solid var(--coral);padding:18px 20px;">
+            <i class="fas fa-users" style="font-size:28px;color:var(--plum);margin-bottom:6px;"></i>
+            <div class="kpi-num" style="font-size:62px;">120–150</div>
+            <div class="kpi-label">Sức chứa khách phục vụ cùng lúc</div>
+          </div>
+          <div class="card" style="text-align:center;border-top:5px solid var(--coral);padding:18px 20px;">
+            <i class="fas fa-star" style="font-size:28px;color:var(--plum);margin-bottom:6px;"></i>
+            <div class="kpi-num" style="font-size:62px;">4.5+</div>
+            <div class="kpi-label">Điểm đánh giá hài lòng / 5 sao</div>
+          </div>
+          <div class="card" style="text-align:center;border-top:5px solid var(--coral);padding:18px 20px;">
+            <i class="fas fa-flag-checkered" style="font-size:28px;color:var(--plum);margin-bottom:6px;"></i>
+            <div class="kpi-num" style="font-size:62px;">01/09</div>
+            <div class="kpi-label">Ngày khai trương chính thức 2026</div>
+          </div>
+        </div>
+        <!-- Middle: Bảng Roadmap 4 giai đoạn tiến độ bàn giao trước khi khai trương -->
+        <div>
+          <div style="font-size:16px;font-weight:700;color:var(--plum);margin-bottom:10px;display:flex;align-items:center;gap:8px;">
+            <i class="fas fa-map-signs" style="color:var(--coral);"></i> Bảng Roadmap 4 Giai Đoạn Bàn Giao Trước Khi Khai Trương (2026)
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4, 1fr);gap:18px;">
+            <div class="roadmap-card">
+              <div class="g-num">GIAI ĐOẠN 01 (T01 – T03/2026)</div>
+              <div class="g-title">Hoàn Thiện Phần Thô &amp; Bàn Giao</div>
+              <div class="g-desc">• Nghiệm thu xây trát 3 tầng 350 m²<br/>• Bàn giao mặt bằng cho nhà thầu nội thất</div>
+            </div>
+            <div class="roadmap-card">
+              <div class="g-num">GIAI ĐOẠN 02 (T04 – T06/2026)</div>
+              <div class="g-title">Lắp Đặt Thiết Bị &amp; PCCC</div>
+              <div class="g-desc">• Lắp máy pha cafe, POS &amp; kệ sách<br/>• Thẩm duyệt nghiệm thu PCCC tự động</div>
+            </div>
+            <div class="roadmap-card">
+              <div class="g-num">GIAI ĐOẠN 03 (T07/2026)</div>
+              <div class="g-title">Nhập Sách &amp; Đào Tạo Nhân Sự</div>
+              <div class="g-desc">• Xếp 5.000 sách mã vạch lên kệ<br/>• Huấn luyện quy trình dịch vụ 15 nhân viên</div>
+            </div>
+            <div class="roadmap-card" style="border-top-color:var(--coral);background:#fff9f7;">
+              <div class="g-num" style="color:var(--plum);">GIAI ĐOẠN 04 (T08/2026)</div>
+              <div class="g-title" style="color:var(--coral);">Chạy Thử Nghiệm &amp; Khai Trương</div>
+              <div class="g-desc">• Dry-run 30 ngày hoàn thiện dịch vụ<br/>• <strong>Grand Opening: 01/09/2026</strong></div>
+            </div>
+          </div>
+        </div>
+        <!-- Bottom: Tiêu chuẩn bàn giao + Ảnh minh họa Book Cafe Unsplash -->
+        <div style="display:grid;grid-template-columns:1.2fr 1fr;gap:20px;align-items:stretch;">
+          <div class="card" style="padding:18px 24px;">
+            <h4 style="font-size:16px;font-weight:700;color:var(--plum);margin-bottom:8px;"><i class="fas fa-clipboard-check" style="margin-right:8px;"></i>Tiêu Chuẩn Bàn Giao Dự Án</h4>
+            <ul class="check-list" style="font-size:14.5px;">
+              <li>Hoàn thành 100% hạng mục xây thô, nội thất đúng hồ sơ kỹ thuật</li>
+              <li>Đạt giấy chứng nhận nghiệm thu an toàn PCCC &amp; Giấy phép ATVSTP</li>
+              <li>Hệ thống máy pha, máy POS, điều hòa, Wi-Fi chạy ổn định 30 ngày</li>
+              <li>15 nhân sự vận hành được huấn luyện bài bản quy trình phục vụ</li>
+            </ul>
+          </div>
+          <!-- Ảnh Unsplash không gian cà phê sách bo góc 14px -->
+          <div style="border-radius:14px;overflow:hidden;box-shadow:var(--shadow);position:relative;background-size:cover;background-position:center;background-image:url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=900&q=80');min-height:130px;display:flex;flex-direction:column;justify-content:flex-end;">
+            <div style="background:linear-gradient(transparent, rgba(30,10,25,0.88));padding:14px 18px;color:white;">
+              <div style="font-size:15px;font-weight:700;">Không Gian Đọc Sách &amp; Làm Việc Yên Tĩnh 3 Tầng</div>
+              <div style="font-size:12.5px;color:rgba(255,255,255,0.9);margin-top:2px;">Đảm bảo tiêu chuẩn ánh sáng và trải nghiệm tối ưu cho độc giả.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       SLIDE 19 – KẾT LUẬN (SPLIT SCREEN 50% ẢNH THỰC TẾ + 50% NỘI DUNG CHỮ 21PX LINE-HEIGHT 1.85)
+       ═══════════════════════════════════════════ -->
+  <section class="slide" id="s19">
+    <!-- Nửa màn hình trái: Ảnh phối cảnh thực tế tràn viền -->
+    <div class="split-image-panel" style="background-image: linear-gradient(135deg, rgba(124,58,95,0.72), rgba(40,15,30,0.88)), url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=1200&q=80');">
+      <div style="position:relative;z-index:2;">
+        <span style="background:var(--coral);color:white;font-size:13px;font-weight:700;letter-spacing:1px;padding:6px 16px;border-radius:20px;display:inline-block;text-transform:uppercase;">
+          <i class="fas fa-check-double" style="margin-right:4px;"></i> Sẵn Sàng Bàn Giao
+        </span>
+      </div>
+      <div style="position:relative;z-index:2;margin:auto 0;">
+        <div style="font-size:76px;color:var(--sage);margin-bottom:16px;"><i class="fas fa-book-reader"></i></div>
+        <h2 style="font-family:'Montserrat',sans-serif;font-size:44px;font-weight:900;color:white;line-height:1.2;">
+          Khởi Đầu Hành Trình Tri Thức
+        </h2>
+        <p style="font-size:19px;color:rgba(255,255,255,.92);margin-top:16px;line-height:1.7;max-width:480px;">
+          "Cà phê đánh thức trí tuệ – Những trang sách mở rộng chân trời."<br/>
+          Dự án Book &amp; Coffee đã hoàn thiện toàn bộ phương án tổ chức thi công và sẵn sàng vận hành sinh lời bền vững.
+        </p>
+      </div>
+      <div style="position:relative;z-index:2;font-size:14.5px;color:rgba(255,255,255,.8);">
+        Book &amp; Coffee Project · Khai trương 01/09/2026
+      </div>
+    </div>
+    <!-- Nửa màn hình phải: Nội dung tóm tắt font 21px line-height 1.85 -->
+    <div class="split-content-panel">
+      <h3 style="font-family:'Montserrat',sans-serif;font-size:28px;font-weight:800;color:var(--plum);margin-bottom:24px;">
+        <i class="fas fa-check-circle" style="color:var(--coral);margin-right:10px;"></i>Tổng Kết Dự Án Quán Cà Phê Sách
+      </h3>
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div class="closing-point" style="display:flex;align-items:flex-start;gap:16px;">
+          <i class="fas fa-sitemap" style="color:var(--coral);font-size:24px;flex-shrink:0;margin-top:6px;"></i>
+          <p style="font-size:21px;color:#333;line-height:1.85;">
+            <strong>Cơ cấu WBS toàn diện:</strong> Bao gồm 10 gói công việc chính và 44 nhiệm vụ chi tiết từ tuyển dụng, đấu thầu đến ngày khai trương 01/09/2026.
+          </p>
+        </div>
+        <div class="closing-point" style="display:flex;align-items:flex-start;gap:16px;">
+          <i class="fas fa-clock" style="color:var(--coral);font-size:24px;flex-shrink:0;margin-top:6px;"></i>
+          <p style="font-size:21px;color:#333;line-height:1.85;">
+            <strong>Tiến độ 18 tháng chuẩn xác:</strong> Lập kế hoạch theo biểu đồ Gantt, tối ưu hóa đường găng nhằm ngăn ngừa nguy cơ trễ hạn bàn giao.
+          </p>
+        </div>
+        <div class="closing-point" style="display:flex;align-items:flex-start;gap:16px;">
+          <i class="fas fa-coins" style="color:var(--coral);font-size:24px;flex-shrink:0;margin-top:6px;"></i>
+          <p style="font-size:21px;color:#333;line-height:1.85;">
+            <strong>Ngân sách 3,5 tỷ đồng minh bạch:</strong> Phân bổ khoa học cho 5 hạng mục lớn, có quỹ dự phòng 11% chủ động ứng phó biến động thị trường.
+          </p>
+        </div>
+        <div class="closing-point" style="display:flex;align-items:flex-start;gap:16px;">
+          <i class="fas fa-users-cog" style="color:var(--coral);font-size:24px;flex-shrink:0;margin-top:6px;"></i>
+          <p style="font-size:21px;color:#333;line-height:1.85;">
+            <strong>Tổ chức chuyên môn hóa cao:</strong> Ban QLDA 11 vị trí cùng 15 nhân sự vận hành được huấn luyện chuẩn mực đưa dự án cán đích thành công.
+          </p>
+        </div>
+      </div>
+      <div class="closing-thanks" style="background:var(--plum);border-radius:14px;padding:18px 28px;text-align:center;color:white;font-size:22px;font-weight:700;letter-spacing:.5px;margin-top:24px;">
+        🙏&nbsp; Trân trọng cảm ơn Thầy/Cô &amp; các bạn đã theo dõi!
+      </div>
+    </div>
+  </section>
+
+</div><!-- /#deck -->
+
+<script>
+// ============================================================
+// NAVIGATION SCRIPT
+// ============================================================
+const slides  = Array.from(document.querySelectorAll('.slide'));
+const TOTAL   = slides.length;
+let current   = 0;
+
+const progressBar  = document.getElementById('progress-bar');
+const slideCounter = document.getElementById('slide-counter');
+const deck         = document.getElementById('deck');
+
+function goTo(idx) {
+  if (idx < 0 || idx >= TOTAL) return;
+  slides[current].classList.remove('active');
+  current = idx;
+  slides[current].classList.add('active');
+
+  // Cập nhật thanh tiến trình & số slide
+  progressBar.style.width = ((current + 1) / TOTAL * 100) + '%';
+  slideCounter.textContent = `${current + 1} / ${TOTAL}`;
+
+  // Đổi màu số slide cho các slide nền tối
+  const isDark = slides[current].classList.contains('slide-section');
+  deck.classList.toggle('dark-counter', isDark);
+
+  // Vẽ biểu đồ khi vào slide 6
+  if (slides[current].id === 's6') {
+    setTimeout(initBudgetChart, 30);
+  }
+}
+
+document.getElementById('btn-prev').addEventListener('click', () => goTo(current - 1));
+document.getElementById('btn-next').addEventListener('click', () => goTo(current + 1));
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'Space')  { e.preventDefault(); goTo(current + 1); }
+  if (e.key === 'ArrowLeft')                         { e.preventDefault(); goTo(current - 1); }
+});
+
+// Hỗ trợ cảm ứng vuốt trên mobile / tablet
+let touchStartX = 0;
+deck.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+deck.addEventListener('touchend',   e => {
+  const dx = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(dx) > 50) goTo(dx > 0 ? current + 1 : current - 1);
+});
+
+// Khởi tạo slide đầu tiên
+goTo(0);
+
+// ============================================================
+// CHART.JS – BUDGET DONUT (Slide 6 to 460px)
+// ============================================================
+let budgetChartInst = null;
+function initBudgetChart() {
+  if (budgetChartInst) return;
+  const ctx = document.getElementById('budgetChart');
+  if (!ctx) return;
+  budgetChartInst = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: [
+        'Thi công & Nội thất (38%)',
+        'Trang thiết bị (22%)',
+        'Hệ thống M&E & PCCC (15%)',
+        'Sách & Nguyên liệu (14%)',
+        'Dự phòng & Khác (11%)',
+      ],
+      datasets: [{
+        data: [38, 22, 15, 14, 11],
+        backgroundColor: ['#7C3A5F', '#FD8C6E', '#C5DE82', '#98ACB5', '#E8A0BF'],
+        borderColor: '#ffffff',
+        borderWidth: 4,
+        hoverOffset: 18,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '66%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: ctx => ` ${ctx.label}` },
+          backgroundColor: '#1E1E1E',
+          titleFont: { family: 'Be Vietnam Pro', size: 14 },
+          bodyFont:  { family: 'Be Vietnam Pro', size: 14 },
+          padding: 12,
+          cornerRadius: 8,
+        },
+      },
+      animation: false,
+    },
+  });
+}
+</script>
+</body>
+</html>
+
